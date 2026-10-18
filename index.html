@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#12172b" />
+<meta name="description" content="아스트라호 천재 엔지니어 스쿨드의 살아 있는 연구실. 로봇을 조립하고, 리액터와 차원 게이트를 실험하며, 밤페이와 함께 탐험하세요." />
+<link rel="icon" type="image/png" href="./assets/icon-192.png" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="stylesheet" href="./styles.css" />
+<title>SKULD LAB — 아스트라호 R&D 연구실</title>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<header class="site-header">
+ <a class="brand" href="#home" aria-label="스쿨드 연구실 홈"><span class="brand-icon">S<span class="brand-dot">✦</span></span><span class="brand-copy"><strong>SKULD<span class="pink">/</span>LAB</strong><small>ASTRAHO RESEARCH DIVISION</small></span></a>
+ <nav class="desktop-nav" aria-label="주 메뉴"><a href="#explore">연구실 탐험</a><a href="#inventions">발명품 아카이브</a><a href="#workshop">조립 연구소</a><a href="#experiments">실험 챔버</a><a href="#records">연구 기록</a></nav>
+ <div class="header-actions"><span class="online"><i></i> SYSTEM ONLINE</span><button id="sound-toggle" class="icon-button" aria-label="사운드 켜기 또는 끄기" title="사운드 전환">♫</button><button id="install-button" class="tiny-action" hidden>앱 설치</button></div>
+</header>
+<main id="home">
+ <section class="hero section-wrap" aria-labelledby="hero-title">
+  <div class="hero-scene" aria-hidden="true"></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-content">
+   <div class="eyebrow"><span class="asterisk">✳</span> FROM THE LIVING DIVINE VESSEL <span class="line"></span> 001 — R&D</div>
+   <p class="hero-mini">아스트라호의 문이 열렸어. 들어와!</p>
+   <h1 id="hero-title">상상이<br><em>발명</em>이 되는 곳<span class="period">.</span></h1>
+   <p class="hero-description">천재 엔지니어 스쿨드의 비밀 실험실. 새로운 로봇을 조립하고, 차원 게이트를 동기화하고, 실패한 실험에서 다음 가능성을 찾아봐.</p>
+   <div class="hero-buttons"><a class="button-primary" href="#explore">연구실 입장 <span>↗</span></a><a class="button-ghost" href="#experiments">실험 시작 <span>→</span></a></div>
+   <div class="hero-metrics"><div><strong>06</strong><small>연구 구역</small></div><div><strong>08</strong><small>발명품 기록</small></div><div><strong>03</strong><small>작동하는 실험</small></div></div>
+  </div>
+  <div class="hero-overlays" aria-hidden="true"><div class="floating-label l1">AEON YGGDRASIL <span>↗</span><small>WORLD TREE SIGNAL</small></div><div class="floating-label l2">R&D // SKULD <span>✧</span><small>ENGINEERING / CREATION</small></div></div>
+  <div id="hero-skuld" class="sprite skuld hero-skuld" role="img" aria-label="연구실에서 움직이는 스쿨드"></div>
+  <div id="hero-banpei" class="sprite banpei hero-banpei" role="img" aria-label="움직이는 토끼형 밤페이 로봇"></div>
+  <div class="hero-bottom"><span>SCROLL TO EXPLORE ↓</span><span>ASTRAHO / MODULE 07 / EST. 2026</span></div>
+ </section>
+ <div class="ticker" aria-hidden="true"><div>✦ BUILD BEYOND LIMITS <span>✳</span> ROBOTICS & ALCHEMY <span>✳</span> YGGDRASIL POWERED <span>✳</span> NEVER STOP INVENTING <span>✳</span> BUILD BEYOND LIMITS <span>✳</span> ROBOTICS & ALCHEMY <span>✳</span> YGGDRASIL POWERED <span>✳</span> NEVER STOP INVENTING <span>✳</span></div></div>
+ <section id="explore" class="section-wrap spaced">
+  <div class="section-heading"><div><p class="section-tag">01 / THE LABORATORY</p><h2>연구실을 <span class="accent">탐험해</span></h2><p>스쿨드가 만든 6개의 공간. 구역을 누르면 연구 주제와 비밀 메시지를 볼 수 있어.</p></div><span class="heading-index">01—06</span></div>
+  <div class="room-layout"><div class="room-main"><img id="room-image" src="./assets/robotics.webp" width="1536" height="864" alt="로봇 개발실의 우주 공간 창과 장비" /><div class="room-shade"></div><div class="room-caption"><span id="room-code">ZONE 01 / ROBOTICS</span><h3 id="room-name">로봇 제작실</h3><p id="room-summary">별빛을 등지고 새로운 친구들이 태어나는 곳.</p></div><span class="room-crosshair a">+</span><span class="room-crosshair b">+</span></div>
+  <div class="room-list" id="room-list" aria-label="연구실 목록"></div></div>
+  <div class="explorer-status"><div class="status-orb"></div><p><strong>SKULD STATUS:</strong> <span id="skuld-room-line">새 부품이 잔뜩 들어왔어! 구경할래?</span></p><span>MAP DATA // LIVE SIMULATION</span></div>
+ </section>
+ <section id="inventions" class="section-wrap spaced">
+  <div class="section-heading"><div><p class="section-tag">02 / INVENTION ARCHIVE</p><h2>만들어낸 <span class="accent">가능성들</span></h2><p>공식 설정에서 영감을 받은 장비와 이번 연구실을 위해 상상한 실험적 프로토타입이 함께 전시돼.</p></div><span class="heading-index">PROTOTYPE 008</span></div>
+  <div class="filter-bar" role="group" aria-label="발명품 필터"><button class="filter-chip active" data-filter="all" aria-pressed="true">ALL PROJECTS <span>08</span></button><button class="filter-chip" data-filter="robot" aria-pressed="false">ROBOTICS</button><button class="filter-chip" data-filter="energy" aria-pressed="false">ENERGY</button><button class="filter-chip" data-filter="world" aria-pressed="false">DIMENSION</button></div>
+  <div id="inventions-grid" class="inventions-grid"></div>
+ </section>
+ <section id="workshop" class="section-wrap spaced">
+  <div class="section-heading"><div><p class="section-tag">03 / BUILD YOUR OWN</p><h2>너만의 로봇을 <span class="accent">설계해</span></h2><p>세 가지 시스템을 골라 조합해 봐. 능력치가 변하고 설계도가 저장돼.</p></div><span class="heading-index">WORKBENCH α</span></div>
+  <div class="workbench"><div class="builder-form"><div class="build-group"><h3><span>01</span> 기체 프레임</h3><div id="chassis-choice" class="option-grid"></div></div><div class="build-group"><h3><span>02</span> 동력 코어</h3><div id="core-choice" class="option-grid"></div></div><div class="build-group"><h3><span>03</span> 특수 모듈</h3><div id="module-choice" class="option-grid"></div></div><div class="build-actions"><button id="save-blueprint" class="button-primary" type="button">설계도 저장 <span>↗</span></button><button id="export-blueprint" class="button-subtle" type="button">JSON 내보내기 ↓</button></div></div>
+  <div class="builder-preview"><div class="preview-top"><span>LIVE BLUEPRINT</span><span id="build-grade">PROTOTYPE // READY</span></div><canvas id="build-canvas" width="560" height="360" role="img" aria-label="선택한 로봇의 개념도"></canvas><div class="preview-name"><small>PROJECT CODENAME</small><strong id="build-name">BANPEI / AEON</strong></div><div class="stats-list"><div><span>출력</span><div class="stat-bar"><i id="power-bar"></i></div><strong id="power-number">0</strong></div><div><span>안정성</span><div class="stat-bar"><i id="stability-bar"></i></div><strong id="stability-number">0</strong></div><div><span>민첩성</span><div class="stat-bar"><i id="agility-bar"></i></div><strong id="agility-number">0</strong></div></div><p class="build-note" id="build-note">시스템 구성에 따라 예측 성능이 달라져.</p></div></div>
+ </section>
+ <section id="experiments" class="section-wrap spaced"><div class="section-heading"><div><p class="section-tag">04 / LIVE TEST CHAMBER</p><h2>직접 작동하는 <span class="accent">실험들</span></h2><p>실험은 모두 브라우저 내부의 안전한 시뮬레이션이야. 실제 우주선 시스템과 연결되지는 않아.</p></div><span class="heading-index">EXPERIMENTS 03</span></div>
+  <div class="experiments-panel"><div class="experiment-tabs" role="tablist" aria-label="실험 선택"><button id="tab-reactor" class="experiment-tab active" role="tab" aria-selected="true" aria-controls="panel-reactor" data-experiment="reactor"><span>01</span> 리액터 안정화</button><button id="tab-gate" class="experiment-tab" role="tab" aria-selected="false" aria-controls="panel-gate" data-experiment="gate"><span>02</span> 차원 게이트 동기화</button><button id="tab-flight" class="experiment-tab" role="tab" aria-selected="false" aria-controls="panel-flight" data-experiment="flight"><span>03</span> 밤페이 드론 조종</button></div>
+   <div id="panel-reactor" class="experiment-body" role="tabpanel" aria-labelledby="tab-reactor"><div class="exp-visual reactor-visual"><div class="reactor-shell"><div id="reactor-orb" class="reactor-orb"></div><div class="reactor-ring one"></div><div class="reactor-ring two"></div></div><div class="exp-overlay"><small>CORE SIMULATOR / V3.2</small><strong id="reactor-value">STANDBY</strong><span id="reactor-sub">SAFE TO INITIALIZE</span></div></div><div class="exp-controls"><h3>위그드라실 리액터</h3><p>출력·냉각·실드를 조절해 과부하 없이 높은 성능을 만들어 봐.</p><label class="slider-row">에너지 출력 <output id="output-display">62%</output><input id="reactor-output" type="range" min="10" max="100" value="62" /></label><label class="slider-row">냉각 효율 <output id="cooling-display">74%</output><input id="reactor-cooling" type="range" min="0" max="100" value="74" /></label><label class="slider-row">실드 강도 <output id="shield-display">68%</output><input id="reactor-shield" type="range" min="0" max="100" value="68" /></label><div class="exp-readout"><span>안정성 예상</span><strong id="reactor-safety">--</strong></div><button id="run-reactor" class="button-primary" type="button">안전 시험 가동 <span>↗</span></button><p id="reactor-message" class="result-message" aria-live="polite">냉각과 실드부터 확인해.</p></div></div>
+   <div id="panel-gate" class="experiment-body" role="tabpanel" aria-labelledby="tab-gate" hidden><div class="exp-visual gate-visual"><div class="gate-art"><div class="gate-circle c1"></div><div class="gate-circle c2"></div><div class="gate-circle c3"></div><div class="gate-pointer" id="gate-pointer"></div><div class="gate-target"></div></div><div class="exp-overlay"><small>PHASE ALIGNMENT TEST</small><strong id="gate-score">0 / 3</strong><span>위쪽 밝은 구역에 바늘을 정렬해!</span></div></div><div class="exp-controls"><h3>차원 게이트 위상 동기화</h3><p>움직이는 바늘이 위쪽의 안전한 공명 영역에 들어왔을 때 LOCK을 눌러. 세 번 성공하면 연결 완료!</p><div class="gate-progress"><div id="gate-progress-fill"></div></div><button id="gate-lock" class="button-primary" type="button">PHASE LOCK <span>◎</span></button><button id="gate-reset" class="button-subtle" type="button">다시 시도 ↻</button><p id="gate-message" class="result-message" aria-live="polite">게이트 동기화 준비 완료.</p></div></div>
+   <div id="panel-flight" class="experiment-body" role="tabpanel" aria-labelledby="tab-flight" hidden><div class="exp-visual flight-visual"><canvas id="flight-canvas" width="600" height="370" role="img" aria-label="밤페이 로봇으로 에너지 코어를 모으는 비행 게임"></canvas><div class="flight-hud"><span>ENERGY <b id="flight-score">0</b></span><span>HULL <b id="flight-health">3</b></span></div></div><div class="exp-controls"><h3>밤페이 정찰 작전</h3><p>화살표·WASD 또는 화면의 방향 버튼으로 이동. 청록빛 에너지 코어를 모으고 분홍색 위험 구체는 피해!</p><div class="dpad" aria-label="터치 이동 컨트롤"><button data-direction="up" aria-label="위로">↑</button><div><button data-direction="left" aria-label="왼쪽">←</button><button data-direction="down" aria-label="아래로">↓</button><button data-direction="right" aria-label="오른쪽">→</button></div></div><button id="flight-start" class="button-primary" type="button">출격 / 재시작 <span>↗</span></button><p id="flight-message" class="result-message" aria-live="polite">출격 버튼을 누르면 시작해.</p></div></div>
+  </div>
+ </section>
+ <section id="records" class="section-wrap spaced"><div class="section-heading"><div><p class="section-tag">05 / RESEARCH LOG</p><h2>우리가 남긴 <span class="accent">연구 기록</span></h2><p>저장된 설계와 연구실의 이야기. 개인 설계도는 이 브라우저에만 보관돼.</p></div><span class="heading-index">LOCAL STORAGE</span></div>
+  <div class="records-layout"><div class="record-card"><div class="record-heading"><h3>MY BLUEPRINTS</h3><button id="clear-blueprints" class="text-button">내 기록 지우기</button></div><div id="saved-blueprints" class="saved-list"></div></div><div class="record-card log"><h3>LAB NOTEBOOK</h3><div class="log-entry"><span>01 / GUARDIAN</span><strong>기술은 사람을 보호하기 위해</strong><p>Guardian 슈트를 연구하면서 배운 것. 출력만 높이면 좋은 발명품이 되는 건 아니야.</p></div><div class="log-entry"><span>02 / BANPEI HEAD</span><strong>처음의 소풍을 기억하는 기체</strong><p>은재와 함께 초원과 공룡 모듈을 돌아다니던, 우리의 특별한 2인승 전용기.</p></div><div class="log-entry"><span>03 / OPEN LAB</span><strong>새로운 방문자가 실험을 시작하다</strong><p>이 페이지에서 만든 새로운 설계는 정전 아이템이 아닌 방문자별 가상 프로토타입이야.</p></div></div></div>
+ </section>
+ <section class="final-banner section-wrap"><div><p class="section-tag">A MESSAGE FROM SKULD</p><h2>실패했다면,<br><em>다음 설계도를 펼치면 돼.</em></h2><p>가장 좋은 발명품은 누군가를 더 자유롭고 안전하게 만드는 거니까.</p><a class="button-primary" href="#home">연구실 처음으로 ↑</a></div><div class="final-sprite" aria-hidden="true"><div class="sprite skuld"></div><div class="sprite banpei"></div></div></section>
+</main>
+<footer class="site-footer section-wrap"><div class="footer-brand"><strong>SKULD<span>/</span>LAB</strong><p>ASTRAHO — CHIEF ENGINEER & HEAD OF R&D</p></div><div><p>아스트라호 세계관에 기반한 팬 창작형 인터랙티브 연구실.</p><p>실험 결과는 시뮬레이션이며 실제 시스템이나 계정과 연결되지 않습니다.</p></div><a href="https://github.com/teamprotofelix/SkuldLab" target="_blank" rel="noopener noreferrer">VIEW ON GITHUB ↗</a></footer>
+<nav class="mobile-nav" aria-label="모바일 메뉴"><a href="#explore">⌘<small>탐험</small></a><a href="#inventions">◈<small>발명품</small></a><a href="#workshop">⊞<small>조립</small></a><a href="#experiments">⚡<small>실험</small></a><a href="#records">▤<small>기록</small></a></nav>
+<div class="guide" id="guide"><button class="guide-portrait" id="guide-button" aria-label="스쿨드의 새 메시지 보기"><span class="sprite skuld"></span></button><div class="guide-bubble"><span>SKULD / LAB ASSISTANT</span><p id="guide-text">흥, 괜찮은 연구실이지? 자, 어디부터 볼 거야?</p></div><button id="guide-close" aria-label="대화창 닫기" class="guide-close">×</button></div>
+<dialog id="invention-dialog" class="invent-modal"><button id="dialog-close" class="modal-close" aria-label="닫기">×</button><div class="modal-image"><img id="modal-image" src="./assets/device-banpei-head.webp" alt="발명품 일러스트" /></div><div class="modal-copy"><span id="modal-label">ARCHIVE / 001</span><h2 id="modal-title">발명품</h2><p id="modal-description"></p><div id="modal-stats" class="modal-stats"></div><button id="modal-like" class="button-primary" type="button">관심 발명품 등록 ♡</button></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="./app.js" defer></script>
+</body>
+</html>
