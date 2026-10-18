@@ -1,0 +1,1 @@
+{"name":"skuld-dimensional-lab","version":"2.0.0","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.mjs","check":"node --check app.js && node --check js/lab.js && node --check js/lab-model.js && node --check sw.js","verify":"python tests/verify.py"}}

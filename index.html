@@ -8,36 +8,34 @@
 <link rel="icon" type="image/png" href="./assets/icon-192.png" />
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="stylesheet" href="./styles.css" />
+<link rel="stylesheet" href="./lab.css" />
+<link rel="preload" href="./assets/generated/lab.webp" as="image" />
 <title>SKULD LAB — 아스트라호 R&D 연구실</title>
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
 <header class="site-header">
  <a class="brand" href="#home" aria-label="스쿨드 연구실 홈"><span class="brand-icon">S<span class="brand-dot">✦</span></span><span class="brand-copy"><strong>SKULD<span class="pink">/</span>LAB</strong><small>ASTRAHO RESEARCH DIVISION</small></span></a>
- <nav class="desktop-nav" aria-label="주 메뉴"><a href="#explore">연구실 탐험</a><a href="#inventions">발명품 아카이브</a><a href="#workshop">조립 연구소</a><a href="#experiments">실험 챔버</a><a href="#records">연구 기록</a></nav>
- <div class="header-actions"><span class="online"><i></i> SYSTEM ONLINE</span><button id="sound-toggle" class="icon-button" aria-label="사운드 켜기 또는 끄기" title="사운드 전환">♫</button><button id="install-button" class="tiny-action" hidden>앱 설치</button></div>
+ <nav class="desktop-nav" aria-label="주 메뉴"><a href="#living-lab">연구소 지도</a><a href="#explore">모듈 둘러보기</a><a href="#inventions">발명품 아카이브</a><a href="#workshop">조립 연구소</a><a href="#experiments">실험 챔버</a><a href="#records">연구 기록</a></nav>
+ <div class="header-actions"><span class="online"><i></i> SYSTEM ONLINE</span><button id="sound-toggle" class="icon-button" aria-label="사운드 켜기 또는 끄기" title="사운드 전환">♫</button><button id="pwa-update" class="tiny-action" hidden>새 버전 적용</button><button id="install-button" class="tiny-action" hidden>앱 설치</button></div>
 </header>
 <main id="home">
- <section class="hero section-wrap" aria-labelledby="hero-title">
-  <div class="hero-scene" aria-hidden="true"></div>
-  <div class="hero-grid" aria-hidden="true"></div>
-  <div class="hero-content">
-   <div class="eyebrow"><span class="asterisk">✳</span> FROM THE LIVING DIVINE VESSEL <span class="line"></span> 001 — R&D</div>
-   <p class="hero-mini">아스트라호의 문이 열렸어. 들어와!</p>
-   <h1 id="hero-title">상상이<br><em>발명</em>이 되는 곳<span class="period">.</span></h1>
-   <p class="hero-description">천재 엔지니어 스쿨드의 비밀 실험실. 새로운 로봇을 조립하고, 차원 게이트를 동기화하고, 실패한 실험에서 다음 가능성을 찾아봐.</p>
-   <div class="hero-buttons"><a class="button-primary" href="#explore">연구실 입장 <span>↗</span></a><a class="button-ghost" href="#experiments">실험 시작 <span>→</span></a></div>
-   <div class="hero-metrics"><div><strong>06</strong><small>연구 구역</small></div><div><strong>08</strong><small>발명품 기록</small></div><div><strong>03</strong><small>작동하는 실험</small></div></div>
-  </div>
-  <div class="hero-overlays" aria-hidden="true"><div class="floating-label l1">AEON YGGDRASIL <span>↗</span><small>WORLD TREE SIGNAL</small></div><div class="floating-label l2">R&D // SKULD <span>✧</span><small>ENGINEERING / CREATION</small></div></div>
-  <div id="hero-skuld" class="sprite skuld hero-skuld" role="img" aria-label="연구실에서 움직이는 스쿨드"></div>
-  <div id="hero-banpei" class="sprite banpei hero-banpei" role="img" aria-label="움직이는 토끼형 밤페이 로봇"></div>
-  <div class="hero-bottom"><span>SCROLL TO EXPLORE ↓</span><span>ASTRAHO / MODULE 07 / EST. 2026</span></div>
- </section>
+<section id="living-lab" class="lab-shell" aria-labelledby="hero-title">
+ <div class="lab-intro"><div><p class="section-tag">ASTRAHO • DIMENSIONAL RESEARCH ARCHIPELAGO</p><h1 id="hero-title">스쿨드의 <em>차원 연구소</em><span>SKULD LAB</span></h1><p>별 사이에 떠 있는 작은 발명 세계. 아스트라호와 연결된 일곱 개의 섬에서, 다음 가능성을 만들어 봐.</p></div><div class="lab-signal"><i></i> PORTAL LINK ESTABLISHED<small>ASTRAHO ↔ SKULD LAB</small></div></div>
+ <div class="lab-toolbar"><div class="view-switch" role="group" aria-label="연구소 화면"><button id="map-view-btn" aria-pressed="true">⌘ LAB MAP <span>연구소 탐험</span></button><button id="voyage-view-btn" aria-pressed="false">↗ FLIGHT VIEW <span>밤페이 비행</span></button></div><div class="lab-tools"><button id="life-toggle" aria-pressed="false">Ⅱ 움직임 멈춤</button><button id="lab-help">? 이용 안내</button></div></div>
+ <div id="map-view" class="hub-grid">
+  <div><div id="map-scroll" class="map-scroll"><div id="lab-map" class="lab-map" aria-label="스쿨드의 차원 연구소 지도"><img class="map-art" src="./assets/generated/lab.webp" alt="별 사이에 떠 있는 연구소의 일곱 섬과 연결 다리" width="1672" height="941" fetchpriority="high"/><div class="map-vignette" aria-hidden="true"></div><div class="map-label">SKULD LAB <span>DIMENSIONAL ARCHIPELAGO / LIVE</span></div><div id="map-hotspots"></div><div id="map-residents"></div><span class="map-compass" aria-hidden="true">✧<small>ASTRAHO LINK ↗</small></span></div></div><p class="map-hint">모듈을 누르면 입장할 수 있어. 구성원을 선택한 뒤 ‘함께 이동’을 눌러 봐. <span>모바일: 지도를 좌우로 밀어 탐험</span></p></div>
+  <aside class="observer"><p class="section-tag">LIVE / LAB RESIDENT</p><div class="observer-top"><div id="observer-avatar" class="crew-portrait"></div><div><span id="observer-role">Chief Engineer</span><h2 id="observer-name">스쿨드</h2><p id="observer-room">설계 아틀리에</p></div></div><p id="observer-line" class="observer-line" aria-live="polite"></p><div class="observer-actions"><button id="crew-talk">말 걸기</button><button id="crew-follow" aria-pressed="false">따라보기</button></div><label class="destination-label" for="crew-destination">함께 갈 모듈</label><select id="crew-destination"></select><button id="crew-send" class="button-primary">함께 이동 →</button><div class="crew-section"><span>CREW & FRIENDS <b>13</b></span><div id="crew-roster" class="crew-roster" aria-label="구성원 선택"></div></div></aside>
+ </div>
+ <div id="voyage-view" hidden><div id="voyage-wrap" class="voyage-wrap" tabindex="0" role="region" aria-label="밤페이 탐사 비행. 수동 조종에서 방향키 또는 WASD를 사용합니다."><canvas id="voyage-canvas" width="1200" height="675" aria-label="우주와 다른 차원으로 이어지는 밤페이 탐사 비행"></canvas><div class="voyage-top"><div><span id="voyage-sector">01 / 성운의 연구 항로</span><small id="voyage-mode">AUTOPILOT</small></div><div class="voyage-readouts"><span>연구 조각 <b id="voyage-energy">0</b></span><span>실드 <b id="voyage-shield">100%</b></span><span>항행 <b id="voyage-distance">0</b></span></div></div><div class="voyage-bottom"><p id="voyage-message" aria-live="polite">자동 항법 준비 완료. 출발을 누르면 탐사가 시작돼.</p><span>BANPEI HEAD / SKULD EXCLUSIVE Mk.1</span></div><div id="voyage-idle" class="voyage-idle"><strong>다음 문 너머에는<br><em>어떤 하늘이 있을까?</em></strong><p>은재야, 보조석은 비워 뒀어.</p><button id="voyage-launch" class="button-primary">밤페이 출격 ↗</button></div></div>
+ <div class="voyage-controls"><div class="view-switch"><button id="voyage-auto" aria-pressed="true">자동 조종</button><button id="voyage-manual" aria-pressed="false">수동 조종</button><button id="voyage-pause" aria-pressed="false">일시정지</button></div><label>항로 <select id="voyage-select"></select></label><label>속도 <input id="voyage-speed" type="range" min="0.5" max="1.5" value="1" step="0.25"/><output id="voyage-speed-label">1×</output></label><button id="voyage-reset">다시 출발 ↻</button></div><div id="voyage-pad" class="voyage-pad" hidden aria-label="밤페이 터치 조종"><button data-steer="up" aria-label="위로">↑</button><div><button data-steer="left" aria-label="왼쪽">←</button><button data-steer="down" aria-label="아래로">↓</button><button data-steer="right" aria-label="오른쪽">→</button></div><p>방향키 · WASD · 터치 / 분홍빛 장애물을 피해 청록빛 조각을 모아 봐.</p></div></div>
+ <div class="lab-bottom-status"><span><i></i> YGGDRASIL RESONANCE <b>STABLE</b></span><span>7 MODULES / 13 RESIDENTS</span><span>RETURN PORTAL <b>ONLINE</b></span></div>
+</section>
+<section id="research-passport" class="section-wrap research-passport"><div><p class="section-tag">YOUR RESEARCH PASSPORT</p><h2>작은 성공을 모아서,<br><em>다음 발명으로.</em></h2><p>여섯 가지 연구 임무에 도전해 봐. 기록은 이 브라우저에 남아.</p><strong id="passport-count">0 / 6 COMPLETE</strong></div><div id="mission-list" class="mission-list"></div></section>
  <div class="ticker" aria-hidden="true"><div>✦ BUILD BEYOND LIMITS <span>✳</span> ROBOTICS & ALCHEMY <span>✳</span> YGGDRASIL POWERED <span>✳</span> NEVER STOP INVENTING <span>✳</span> BUILD BEYOND LIMITS <span>✳</span> ROBOTICS & ALCHEMY <span>✳</span> YGGDRASIL POWERED <span>✳</span> NEVER STOP INVENTING <span>✳</span></div></div>
  <section id="explore" class="section-wrap spaced">
-  <div class="section-heading"><div><p class="section-tag">01 / THE LABORATORY</p><h2>연구실을 <span class="accent">탐험해</span></h2><p>스쿨드가 만든 6개의 공간. 구역을 누르면 연구 주제와 비밀 메시지를 볼 수 있어.</p></div><span class="heading-index">01—06</span></div>
-  <div class="room-layout"><div class="room-main"><img id="room-image" src="./assets/robotics.webp" width="1536" height="864" alt="로봇 개발실의 우주 공간 창과 장비" /><div class="room-shade"></div><div class="room-caption"><span id="room-code">ZONE 01 / ROBOTICS</span><h3 id="room-name">로봇 제작실</h3><p id="room-summary">별빛을 등지고 새로운 친구들이 태어나는 곳.</p></div><span class="room-crosshair a">+</span><span class="room-crosshair b">+</span></div>
+  <div class="section-heading"><div><p class="section-tag">01 / THE LABORATORY</p><h2>연구실을 <span class="accent">탐험해</span></h2><p>일곱 개의 차원 연구 모듈. 구역을 누르면 연구 주제와 비밀 메시지를 볼 수 있어.</p></div><span class="heading-index">01—07</span></div>
+  <div class="module-intro"><p>중앙 아틀리에의 문은 아스트라호로, 다른 포털들은 서로 다른 세계의 실험 구역으로 이어져. 이곳은 우주에 떠 있는 연구소이자 여러 하늘을 품은 작은 차원 군도야.</p></div><div class="room-layout"><div class="room-main"><img id="room-image" src="./assets/robotics.webp" width="1536" height="864" alt="로봇 개발실의 우주 공간 창과 장비" /><div class="room-shade"></div><div class="room-caption"><span id="room-code">ZONE 01 / ROBOTICS</span><h3 id="room-name">로봇 제작실</h3><p id="room-summary">별빛을 등지고 새로운 친구들이 태어나는 곳.</p></div><span class="room-crosshair a">+</span><span class="room-crosshair b">+</span></div>
   <div class="room-list" id="room-list" aria-label="연구실 목록"></div></div>
   <div class="explorer-status"><div class="status-orb"></div><p><strong>SKULD STATUS:</strong> <span id="skuld-room-line">새 부품이 잔뜩 들어왔어! 구경할래?</span></p><span>MAP DATA // LIVE SIMULATION</span></div>
  </section>
@@ -68,6 +66,9 @@
 <div class="guide" id="guide"><button class="guide-portrait" id="guide-button" aria-label="스쿨드의 새 메시지 보기"><span class="sprite skuld"></span></button><div class="guide-bubble"><span>SKULD / LAB ASSISTANT</span><p id="guide-text">흥, 괜찮은 연구실이지? 자, 어디부터 볼 거야?</p></div><button id="guide-close" aria-label="대화창 닫기" class="guide-close">×</button></div>
 <dialog id="invention-dialog" class="invent-modal"><button id="dialog-close" class="modal-close" aria-label="닫기">×</button><div class="modal-image"><img id="modal-image" src="./assets/device-banpei-head.webp" alt="발명품 일러스트" /></div><div class="modal-copy"><span id="modal-label">ARCHIVE / 001</span><h2 id="modal-title">발명품</h2><p id="modal-description"></p><div id="modal-stats" class="modal-stats"></div><button id="modal-like" class="button-primary" type="button">관심 발명품 등록 ♡</button></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
+<dialog id="module-dialog" class="module-dialog"><button id="module-close" class="modal-close" aria-label="모듈 창 닫기">×</button><img id="module-art" src="./assets/robotics.webp" alt="연구 모듈 전경" width="1280" height="720"/><div class="module-detail"><p id="module-kicker" class="section-tag"></p><h2 id="module-title"></h2><p id="module-description"></p><div id="module-occupants" class="module-occupants"></div><div class="module-actions"><button id="module-visit">선택한 구성원과 이동</button><button id="module-start" class="button-primary">실험 시작</button></div><div id="module-game" hidden><p id="mini-instruction"></p><div id="mini-buttons"></div><p id="mini-response" role="status"></p><button id="mini-reset">다시 실험 ↻</button></div></div></dialog>
+<dialog id="help-dialog" class="help-dialog"><button id="help-close" class="modal-close" aria-label="안내 닫기">×</button><p class="section-tag">WELCOME TO SKULD LAB</p><h2>연구소 이용 안내</h2><p>모듈 이름을 눌러 전경과 실험을 열어 봐. 오른쪽 구성원을 선택하면 그 친구의 위치와 이야기를 볼 수 있어.</p><p>‘함께 이동’은 연결 다리를 따라 이동을 예약해. ‘따라보기’는 선택한 친구가 보이도록 지도를 움직여 줘.</p><p>FLIGHT VIEW에서 출격 후 자동 조종으로 풍경을 감상하거나 수동 조종으로 직접 탐사할 수 있어. 방향키·WASD는 비행 화면에 포커스가 있을 때 동작해.</p><p>여섯 가지 임무와 설계도는 이 브라우저에 저장돼. 모션 감소 설정에서는 생활 애니메이션이 멈추며, 출격은 직접 눌러 시작할 수 있어.</p><p>자비스의 구체형 드론과 차원 군도 배치는 이번 사이트를 위한 창작이야. 공개 대사는 세계관을 바탕으로 새로 작성했어.</p><button id="progress-export">연구 여권 JSON 내보내기 ↓</button></dialog>
 <script src="./app.js" defer></script>
+<script type="module" src="./js/lab.js"></script>
 </body>
 </html>

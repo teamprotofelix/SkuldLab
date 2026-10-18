@@ -1,0 +1,336 @@
+[
+  {
+    "asset": "assets/generated/lab.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 3488461,
+    "webp_bytes": 360270,
+    "sha256": "b9cbc8d21f466a6cf5f7691b170cb8ceff8fbd38fd1b693c0536f72ab68aaef7",
+    "layout": null
+  },
+  {
+    "asset": "assets/robotics.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2954906,
+    "webp_bytes": 223762,
+    "sha256": "6d55a5debabcd1ff0c4ff0f9a3920e5afc0fdea881dd65fbcc363aaaca841c3f",
+    "layout": null
+  },
+  {
+    "asset": "assets/reactor.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 3643396,
+    "webp_bytes": 285020,
+    "sha256": "a95256875a29571b5e82b78c4283f7ce9d76d44cddfecfae2360eed549b15b2f",
+    "layout": null
+  },
+  {
+    "asset": "assets/worldtree.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 3682850,
+    "webp_bytes": 281814,
+    "sha256": "46ca031ebb77ff1125f59e2fd22a46142442726d9edc53feefeb2bda386b322e",
+    "layout": null
+  },
+  {
+    "asset": "assets/hangar.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 3040577,
+    "webp_bytes": 224972,
+    "sha256": "f807267f85e282cc663f129985efab9bab3e1806be283e2a2456bcf915320334",
+    "layout": null
+  },
+  {
+    "asset": "assets/gate.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 3004275,
+    "webp_bytes": 209386,
+    "sha256": "67b30195aed44fce0caf809baa952865d24aa06b9f548b4c408dc2e6468c914a",
+    "layout": null
+  },
+  {
+    "asset": "assets/alchemy.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 3287759,
+    "webp_bytes": 263202,
+    "sha256": "2ff9eef9e3566ccf7b4cc8ea09e0228f23dd21ff4e79e8b7b39f01c0e7517ce4",
+    "layout": null
+  },
+  {
+    "asset": "assets/generated/nebula.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2703877,
+    "webp_bytes": 139220,
+    "sha256": "4fe8fd9984fc3c7808c4772bdc21cf18bb2843646b8fed9f23b9d4e4cab0bf31",
+    "layout": null
+  },
+  {
+    "asset": "assets/generated/dinosaur.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2999293,
+    "webp_bytes": 204730,
+    "sha256": "f5a54c5f6c9d8817f4b3a78fd27523c9afc770257865e51e8db2407a0b09d221",
+    "layout": null
+  },
+  {
+    "asset": "assets/generated/city.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2888854,
+    "webp_bytes": 197918,
+    "sha256": "23e6880a3e3ebe922eaeab9ba0164212571ed85b8c8bb99976cf6abbed599fbe",
+    "layout": null
+  },
+  {
+    "asset": "assets/crew/skuld.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1938093,
+    "webp_bytes": 89204,
+    "sha256": "d9d37de6c5fab2c28fb4b150ddab3e3acc3179357f747bd738421e3b1a3b907a",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/banpei.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1821644,
+    "webp_bytes": 89514,
+    "sha256": "7800e0497e1c250825162ba1844f434b24c378bf92eef8c34cee19cc4925f772",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/urd.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 2394432,
+    "webp_bytes": 102188,
+    "sha256": "9dcef3649dd271cba409b1895ed5e275610f26733688578bd473f1db61680833",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/marie.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1426684,
+    "webp_bytes": 67556,
+    "sha256": "1f63edfb9e839e29b65482813110d2b22d9e98a957424f0c810b174e821cf481",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/2b.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1389496,
+    "webp_bytes": 61058,
+    "sha256": "09ca7294ac4ed6c8555b04d8b0d5693fd9ec99805005f67c581a2956223b4396",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/amelia.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1743817,
+    "webp_bytes": 85550,
+    "sha256": "2bbde67ecf1db0929d8e4cb339f5782e580b6107de69810ead629f9509fc80ed",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/e.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1391356,
+    "webp_bytes": 61876,
+    "sha256": "68223dd70fad7fc2a8b41530bbed23db27939a4903d0aff6e82cf44ae9126931",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/seoah.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 2003596,
+    "webp_bytes": 83812,
+    "sha256": "c480b1d13cb8b32464326ad2e73880bae51096e22d68d00a5626e80894a16434",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/myr.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 2180060,
+    "webp_bytes": 94054,
+    "sha256": "20bbce2be556c31ee46b3b4ba3ad602cf268b145ccb37779bc0bb0a2da6bef22",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/yor.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1317135,
+    "webp_bytes": 60782,
+    "sha256": "163e2e68a0929dab6c5245ae32b92396d61dc5f61b4ca9d89684053935418b78",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/serena.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 2232910,
+    "webp_bytes": 108244,
+    "sha256": "020b9da5f03ecc932d8841feff5d5334226830a83ac575af626ee6012fb90df0",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/crew/jarvis.webp",
+    "kind": "AI-generated directional atlas",
+    "source_png_bytes": 1496210,
+    "webp_bytes": 67784,
+    "sha256": "1b74587239a9277e90f4af716c26bae6149c24dd69487ae2c0aa7f5997ed02c2",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/atelier.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 3173396,
+    "webp_bytes": 230850,
+    "sha256": "31d5e59754c5125c8165927c73a50a7af42416f85d2ef548d9b84664d3757234",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-banpei-head.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2227763,
+    "webp_bytes": 97584,
+    "sha256": "07385339f84cbfbad53a05602968a2fad7373bbedd16fbb7053db92d2939830d",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-guardian-link.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2051243,
+    "webp_bytes": 80222,
+    "sha256": "28f6c6a3f0d9b9e6bae95a337eb86f74f4bc78606885dfddf565f5cf0d957d63",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-yggdrasil-core.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2334396,
+    "webp_bytes": 126794,
+    "sha256": "e8dca980888b5a8bf8818594f5d5e23ca6415495cf0040f3e16e9a7da23b2773",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-pocket-gate.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2206972,
+    "webp_bytes": 103982,
+    "sha256": "6be56148ade6dde40a4801a9ca9b24fd24ab0ac797256f0b39af0a6438e572e6",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-stellar-drone.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2058153,
+    "webp_bytes": 78962,
+    "sha256": "296737a48fbf6f9183d672d0ada8a8b36dc6695d7e962b5dbc84577f222945b1",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-dino-beacon.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2080549,
+    "webp_bytes": 62312,
+    "sha256": "5772ba2ab175cbd7b145d7b8c22cca39c5b05770a10cd6130c0043baf5333d6d",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-emotion-sensor.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 1848045,
+    "webp_bytes": 56996,
+    "sha256": "a44eec4fbb5098163757fae815a49c91c10e3a5e55eaf55fb7156fa03dbe43b6",
+    "layout": null
+  },
+  {
+    "asset": "assets/device-gravity-loom.webp",
+    "kind": "AI-generated environment",
+    "source_png_bytes": 2206692,
+    "webp_bytes": 113474,
+    "sha256": "02eaa6c8c8723a9d439d886f41050943df626bbf24040d08193771900084d63e",
+    "layout": null
+  },
+  {
+    "asset": "assets/crew/wanda.webp",
+    "kind": "Reused reference directional atlas",
+    "source": "teamprotofelix/Jarvis_Astraho main / assets/sprites/wanda.webp",
+    "webp_bytes": 60124,
+    "sha256": "084b7f23c346ea710e5687a5f82a4a6aaba0e1facc1d66b1723c38685b7f56e7",
+    "layout": {
+      "columns": 3,
+      "rows": 4,
+      "frameWidth": 128,
+      "frameHeight": 160
+    }
+  },
+  {
+    "asset": "assets/generated/banpei-flight.webp",
+    "kind": "AI-generated flight atlas",
+    "source_png_bytes": 1990174,
+    "webp_bytes": 65652,
+    "sha256": "9ed8c203f69077123ff6b7248c9250593dcd89adef7093880cc4fa26abf3256a",
+    "layout": {
+      "columns": 3,
+      "rows": 1,
+      "frameWidth": 300,
+      "frameHeight": 240
+    }
+  }
+]
