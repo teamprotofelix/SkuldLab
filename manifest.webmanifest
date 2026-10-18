@@ -1,1 +1,32 @@
-{"id":"./","name":"Skuld Lab — 아스트라호 연구실","short_name":"Skuld Lab","description":"천재 엔지니어 스쿨드의 인터랙티브 연구실","start_url":"./","scope":"./","display":"standalone","background_color":"#0e1223","theme_color":"#12172b","icons":[{"src":"./assets/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"./assets/icon-512.png","sizes":"512x512","type":"image/png"}]}
+{
+  "id": "./",
+  "name": "스쿨드의 연구소 — Skuld Lab",
+  "short_name": "스쿨드 연구소",
+  "description": "밤페이와 함께 떠나는 스쿨드의 아스트라호 차원 연구소",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1223",
+  "theme_color": "#12172b",
+  "icons": [
+    {
+      "src": "./assets/banpei-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/banpei-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/banpei-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "lang": "ko"
+}

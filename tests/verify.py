@@ -32,10 +32,23 @@ with Image.open(R/'assets/generated/banpei-flight.webp') as im:
  assert im.size==(900,240) and im.mode=='RGBA'
  for x in range(3):assert im.crop((x*300,0,(x+1)*300,240)).getbbox()
 assert all(p in files for p in ['./lab.css','./js/lab.js','./js/lab-model.js'])
-for f in ['app.js','js/lab.js','js/lab-model.js','sw.js']:subprocess.run(['node','--check',str(R/f)],check=True)
+for f in ['app.js','js/lab.js','js/lab-model.js','js/pwa.js','sw.js']:subprocess.run(['node','--check',str(R/f)],check=True)
 rows=json.loads((R/'docs/asset-manifest.json').read_text())
 import hashlib
 for row in rows:
  path=R/row['asset'];assert path.exists();assert hashlib.sha256(path.read_bytes()).hexdigest()==row['sha256']
 print(f'PASS: {len(p.ids)} unique ids, all local links and anchors, {len(assets)} valid WebP assets, 13 transparent 12-frame atlases, {len(files)} offline resources, provenance hashes, JS syntax.')
 print(f'WebP delivery total: {sum(p.stat().st_size for p in assets):,} bytes')
+
+m=json.loads((R/'manifest.webmanifest').read_text())
+assert m['id']==m['start_url']==m['scope']=='./'
+assert m['display']=='standalone'
+assert {i.get('purpose') for i in m['icons']}=={'any','maskable'}
+for icon in m['icons']:
+ path=R/icon['src'];assert icon['src'] in files
+ with Image.open(path) as im:
+  assert f'{im.width}x{im.height}'==icon['sizes']
+  assert im.mode in ('RGB','P') and 'transparency' not in im.info and im.format=='PNG'
+with Image.open(R/'assets/banpei-apple-180.png') as im:assert im.size==(180,180)
+assert './js/pwa.js' in files and './pwa.css' in files
+print('PASS: standalone manifest identity, normal/maskable Banpei icons, Apple icon and offline installation assets.')
