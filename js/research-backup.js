@@ -33,10 +33,13 @@ export function evaluateDesign(design, balance) {
 }
 
 export function settleVoyage(state, entry) {
- if (state.log.some(record => record.id === entry.id)) return;
+ if (state.log.some(record => record.id === entry.id)) return false;
  if (!validLog(entry)) throw new Error('귀환 기록을 확인할 수 없어.');
  state.log.unshift(entry);
+ state.progress.best = Math.max(state.progress.best, entry.fragments);
+ if (entry.fragments >= 10 && !state.progress.done.includes('voyage')) state.progress.done.push('voyage');
  if (state.test?.design.id === entry.id) state.test = null;
+ return true;
 }
 
 function emptyState() {
@@ -62,23 +65,35 @@ function validate(state) {
  };
 }
 
-function legacyState(records, strict) {
+function parseLegacyRecord(record) {
+ if (record === null) return null;
+ if (typeof record !== 'string') throw new Error('이전 백업의 기록 형식이 올바르지 않아.');
+ return JSON.parse(record);
+}
+
+function legacyBackupState(records) {
  const state = emptyState();
+ const [blueprints, likes, progress] = LEGACY_KEYS.map(key => parseLegacyRecord(records[key]));
+ return validate({...state, blueprints:blueprints ?? [], likes:likes ?? [], progress:progress ?? state.progress});
+}
+
+export function readLegacyState(readRecord) {
  const [blueprints, likes, progress] = LEGACY_KEYS.map(key => {
-  const record = records[key];
-  if (record === null) return null;
-  if (typeof record !== 'string') throw new Error('이전 백업의 기록 형식이 올바르지 않아.');
-  return JSON.parse(record);
+  const raw = readRecord(key);
+  try {
+   return parseLegacyRecord(raw);
+  } catch (error) {
+   if (!(error instanceof SyntaxError)) throw error;
+   return null;
+  }
  });
- state.blueprints = blueprints ?? [];
- state.likes = likes ?? [];
- state.progress = progress ?? state.progress;
- if (!strict) {
-  if (Array.isArray(state.blueprints)) state.blueprints = [...new Map(state.blueprints.filter(validDesign).map(item => [item.id, item])).values()].slice(0,30);
-  if (Array.isArray(state.likes)) state.likes = [...new Set(state.likes.filter(id => INVENTIONS.includes(id)))];
-  state.progress = cleanProgress(progress);
-  state.progress.best = Math.floor(state.progress.best);
+ const state = emptyState();
+ if (Array.isArray(blueprints)) {
+  state.blueprints = [...new Map(blueprints.filter(validDesign).map(item => [item.id, item])).values()].slice(0,30);
  }
+ if (Array.isArray(likes)) state.likes = [...new Set(likes.filter(id => INVENTIONS.includes(id)))];
+ state.progress = cleanProgress(object(progress) ? progress : null);
+ state.progress.best = Math.floor(state.progress.best);
  return validate(state);
 }
 
@@ -86,7 +101,7 @@ export function parseBackup(source) {
  if (new TextEncoder().encode(source).length > MAX_BACKUP_BYTES) throw new Error('백업은 2MB까지 가져올 수 있어.');
  const backup = JSON.parse(source);
  if (backup?.format !== FORMAT) throw new Error('스쿨드 연구소 전체 백업 파일을 선택해 줘.');
- if (backup.version === 1 && object(backup.records)) return legacyState(backup.records, true);
+ if (backup.version === 1 && object(backup.records)) return legacyBackupState(backup.records);
  if (backup.version === 2) return validate(backup.state);
  throw new Error('이 백업 버전은 지원하지 않아.');
 }
@@ -127,7 +142,7 @@ export function createResearchStore(factory, readLegacy, notify = () => {}, name
    let result, failure, changed;
    request.onsuccess = () => {
     try {
-     const current = request.result ?? legacyState(Object.fromEntries(LEGACY_KEYS.map(key => [key, readLegacy(key)])), false);
+     const current = request.result ?? readLegacyState(readLegacy);
      const before = JSON.stringify(current);
      result = validate(change(current) ?? current);
      changed = !request.result || before !== JSON.stringify(result);

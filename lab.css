@@ -20,7 +20,8 @@ html{scroll-padding-top:95px}button:focus-visible,a:focus-visible,select:focus-v
 .module-scene{position:relative;overflow:hidden;aspect-ratio:16/8;background:#11182a}.module-scene>img{width:100%;height:100%;object-fit:cover;display:block}.scene-actor{display:none;position:absolute;bottom:2%;height:34%;aspect-ratio:128/160;background-size:300% 400%;background-position:50% 0;background-repeat:no-repeat;filter:drop-shadow(0 4px 6px #070817aa);pointer-events:none}.module-scene[data-zone=robotics] .scene-actor,.module-scene[data-zone=hangar] .scene-actor,.module-scene[data-zone=reactor] .scene-skuld{display:block}.scene-skuld{right:26%;background-image:url('./assets/crew/skuld.webp');animation:scene-breathe 2.8s ease-in-out infinite}.scene-banpei{right:12%;height:26%;background-image:url('./assets/crew/banpei.webp');animation:scene-breathe 3.5s ease-in-out infinite reverse}@keyframes scene-breathe{50%{transform:translateY(-4px)}}@media(prefers-reduced-motion:reduce){.scene-actor{animation:none}}@media(max-width:800px){.module-scene{aspect-ratio:16/10}}
 .trial-balance{display:grid;grid-template-columns:1fr auto;gap:.3rem .7rem;flex:1 1 100%;color:#f1dbea;font-size:.85rem}
 .trial-balance input{grid-column:1/-1;width:100%;accent-color:#f98eb7;min-height:32px}
-.research-journal{margin-top:1rem;overflow-wrap:anywhere}
+.research-journal{margin-top:1rem;scroll-margin-top:6rem;overflow-wrap:anywhere}
+#research-return-result:empty{display:none}
 #research-log{padding-inline-start:1.4rem;line-height:1.7}
 #research-flight-status{font-size:.85rem;color:#cee9e4;overflow-wrap:anywhere}
 #backup-file{display:block;margin:.6rem 0;max-width:100%;color:inherit}

@@ -165,17 +165,19 @@ $('#research-return').onclick = async () => {
  const entry = {...activeResearch, id:activeResearch.design.id, sector:SECTORS[voyage.sector].id,
   fragments:voyage.energy, distance:Math.floor(voyage.distance), returned:new Date().toISOString()};
  try {
-  await updateResearch(state => {
-   settleVoyage(state, entry);
-   state.progress.best = Math.max(state.progress.best, entry.fragments);
-  });
+  let saved;
+  await updateResearch(state => { saved = settleVoyage(state, entry); });
   activeResearch = null;
   started = false;
   $('#voyage-idle').hidden = false;
   syncResearchFlight();
   setView('map');
-  announce(`스쿨드: ${entry.fragments}개나 찾아왔네! 관측 결과는 연구 일지에서 확인해 봐.`);
-  go('records');
+  const result = $('#research-return-result');
+  result.textContent = saved
+   ? `스쿨드: 별조각 ${entry.fragments}개를 가져왔네! 이번 관측을 일지에 기록했어.`
+   : '이 시험은 이미 귀환 처리가 끝났어. 먼저 저장된 관측 결과를 확인해 줘.';
+  go('research-journal');
+  result.focus({preventScroll:true});
  } catch {
   $('#research-flight-status').textContent = '귀환 기록을 저장하지 못했어. 다시 귀환을 눌러 줘.';
  } finally {
@@ -234,8 +236,8 @@ if (view === 'voyage' && flightVisible && started && !flightPaused) {
  voyage.step(dt, Object.fromEntries([...input].map(key => [key,true])), Number($('#voyage-speed').value));
  if (voyage.energy !== previousEnergy) {
   syncResearchFlight();
-  if (voyage.energy >= 10) achieve('voyage');
-  if (voyage.energy > progress.best && voyage.energy >= energyCheckpoint + 5) {
+  if (!activeResearch && voyage.energy >= 10) achieve('voyage');
+  if (!activeResearch && voyage.energy > progress.best && voyage.energy >= energyCheckpoint + 5) {
    const energy = voyage.energy;
    energyCheckpoint = energy;
    updateResearch(state => {state.progress.best = Math.max(state.progress.best, energy);}).catch(storageError);
