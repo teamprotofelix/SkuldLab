@@ -332,5 +332,29 @@
       "frameWidth": 300,
       "frameHeight": 240
     }
+  },
+  {
+    "asset": "assets/detail/robotics-v3.webp",
+    "kind": "AI-generated detailed environment, built-in image generator, original image as visual reference",
+    "source_png_bytes": 3389177,
+    "webp_bytes": 455830,
+    "sha256": "02b35bee02508c79bf1041f38bdc20fb6f0f8499937fd498be6153cc79546fa4",
+    "layout": "1672x941; displayed on demand; fallback to existing art"
+  },
+  {
+    "asset": "assets/detail/hangar-v3.webp",
+    "kind": "AI-generated detailed environment, built-in image generator, original image as visual reference",
+    "source_png_bytes": 2984778,
+    "webp_bytes": 349230,
+    "sha256": "6f90e68ac38c7038a6492f151bccfafffcc7fb8129a3176da74d9c421f2fcd9e",
+    "layout": "1672x941; displayed on demand; fallback to existing art"
+  },
+  {
+    "asset": "assets/detail/reactor-v3.webp",
+    "kind": "AI-generated detailed environment, built-in image generator, original image as visual reference",
+    "source_png_bytes": 3728294,
+    "webp_bytes": 457678,
+    "sha256": "8a2c2744316f7fec831f8d965c08a0f133ed49af762e7cc4c0d689b1b41f8c05",
+    "layout": "1672x941; displayed on demand; fallback to existing art"
   }
 ]

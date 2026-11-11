@@ -1,3 +1,4 @@
+import {evaluateDesign, researchState, onResearchChange, updateResearch} from './js/research-backup.js';
 'use strict';
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 const ROOMS=[
@@ -18,9 +19,6 @@ const INVENTIONS=[
 {id:'emotion-sensor',name:'하트비트 감응 센서',en:'EMOTION RESONANCE',group:'energy',tag:'PROTOTYPE',rarity:'SOFT TECH',description:'조종자의 편안함을 중요하게 생각하는 감응형 인터페이스 콘셉트.',short:'기계를 조종하는 사람의 마음을 생각해.',detail:'의료기기나 감정 판정기가 아닌 세계관 창작 장치다. 방문자에 대한 실제 감정 분석이나 개인정보 수집 기능은 없다.',stats:'반응형 UI · 피로 경고 · 프라이버시'},
 {id:'gravity-loom',name:'그라비티 룸',en:'GRAVITY LOOM',group:'world',tag:'PROTOTYPE',rarity:'PHYSICS',description:'기체 주변의 가상 중력장을 설계하며 공간의 흐름을 관찰하는 시뮬레이터.',short:'중력장을 짜듯이 새 공간을 설계해.',detail:'아스트라호 무중력 모듈과 수련실의 설정에서 영감을 받은 개념 작품이다.',stats:'중력 벡터 · 궤도 시각화'}];
 const CONFIG={chassis:[{id:'banpei',icon:'🐰',name:'밤페이',en:'BALANCED',values:[58,68,56]},{id:'drone',icon:'✈',name:'정찰 드론',en:'AGILE',values:[44,51,89]},{id:'guardian',icon:'⬡',name:'가디언',en:'ARMORED',values:[79,84,28]}],core:[{id:'solar',icon:'☀',name:'스텔라',en:'SOLAR',values:[8,10,4]},{id:'plasma',icon:'⚡',name:'플라즈마',en:'PLASMA',values:[29,-17,10]},{id:'tree',icon:'✳',name:'세계수',en:'YGGDRASIL',values:[18,23,-4]}],module:[{id:'shield',icon:'◈',name:'방어 실드',en:'SHIELD',values:[-6,20,-8]},{id:'thruster',icon:'➤',name:'추진기',en:'BOOST',values:[10,-11,24]},{id:'scanner',icon:'⌕',name:'탐사 센서',en:'SCAN',values:[4,12,11]}]};
-const LSKEY='skuld_lab_blueprints_v1',LIKESKEY='skuld_lab_likes_v1';
-function load(key,fallback){try{let v=JSON.parse(localStorage.getItem(key));return Array.isArray(v)?v:fallback}catch{return fallback}}
-function save(key,v){try{localStorage.setItem(key,JSON.stringify(v));return true}catch{return false}}
 function clamp(a,min,max){return Math.max(min,Math.min(max,a))}
 let soundOn=false,audioCtx;
 function beep(freq=520,duration=.09){if(!soundOn)return;try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(freq,audioCtx.currentTime);g.gain.setValueAtTime(.04,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration)}catch{}}
@@ -31,11 +29,21 @@ function speak(text){$('#guide-text').textContent=text;$('#guide').hidden=false;
 $('#guide-button').addEventListener('click',()=>speak(SAYINGS[sayIndex++%SAYINGS.length]));$('#guide-close').addEventListener('click',()=>{$('#guide').hidden=true});
 function selectRoom(index){let r=ROOMS[index];$('#room-image').src=`./assets/${r.key}.webp`;$('#room-image').alt=`${r.name} 상상도`;$('#room-code').textContent=r.code;$('#room-name').textContent=r.name;$('#room-summary').textContent=r.summary;$('#skuld-room-line').textContent=r.saying;$$('.room-button').forEach((b,i)=>{b.classList.toggle('active',i===index);b.setAttribute('aria-pressed',String(i===index))});beep(450+index*80,.09)}
 $('#room-list').replaceChildren(...ROOMS.map((r,i)=>{let b=document.createElement('button');b.className='room-button';b.type='button';b.setAttribute('aria-pressed',String(i===0));b.innerHTML=`<span class="room-number">${String(i+1).padStart(2,'0')}</span><span class="room-words"><strong>${r.name}</strong><small>${r.subtitle}</small></span><span class="arrow">↗</span>`;b.addEventListener('click',()=>{selectRoom(i);speak(r.saying)});return b}));selectRoom(0);
-let filter='all',likes=load(LIKESKEY,[]);
+let filter='all',likes=researchState().likes;
 function renderCards(){const selected=INVENTIONS.filter(p=>filter==='all'||p.group===filter);$('#inventions-grid').replaceChildren(...selected.map((item)=>{let el=document.createElement('article');el.className='invent-card';const num=INVENTIONS.indexOf(item)+1;el.innerHTML=`<span class="card-number">R&D — ${String(num).padStart(3,'0')}</span><img class="card-img" src="./assets/device-${item.id}.webp" alt="${item.name} 개념 일러스트" loading="lazy" width="640" height="420"/><div class="card-body"><span class="card-kicker">${item.en}</span><h3>${item.name}</h3><p>${item.short}</p><div class="card-foot"><small>${item.rarity} ${likes.includes(item.id)?'♥':''}</small><button type="button" aria-label="${item.name} 자세히 보기">상세 보기 ↗</button></div></div>`;el.querySelector('button').addEventListener('click',()=>openInvent(item));$('#inventions-grid');return el}));}
 $$('.filter-chip').forEach(btn=>btn.addEventListener('click',()=>{filter=btn.dataset.filter;$$('.filter-chip').forEach(b=>{b.classList.toggle('active',b===btn);b.setAttribute('aria-pressed',String(b===btn))});renderCards();beep()}));
 let modalItem=null;const modal=$('#invention-dialog');function openInvent(item){modalItem=item;$('#modal-image').src=`./assets/device-${item.id}.webp`;$('#modal-image').alt=`${item.name} 개념 일러스트`;$('#modal-label').textContent=`R&D / ${item.tag} / ${item.en}`;$('#modal-title').textContent=item.name;$('#modal-description').textContent=item.description+' '+item.detail;$('#modal-stats').textContent=item.stats;$('#modal-like').textContent=likes.includes(item.id)?'등록 취소 ♡':'관심 발명품 등록 ♡';if(typeof modal.showModal==='function')modal.showModal();else modal.setAttribute('open','');beep(770)}
-$('#dialog-close').addEventListener('click',()=>modal.close());modal.addEventListener('click',(e)=>{if(e.target===modal)modal.close()});$('#modal-like').addEventListener('click',()=>{if(!modalItem)return;likes=likes.includes(modalItem.id)?likes.filter(v=>v!==modalItem.id):[...likes,modalItem.id];save(LIKESKEY,likes);$('#modal-like').textContent=likes.includes(modalItem.id)?'등록 취소 ♡':'관심 발명품 등록 ♡';renderCards();toast('관심 발명품 목록이 업데이트됐어!')});renderCards();
+$('#dialog-close').addEventListener('click',()=>modal.close());modal.addEventListener('click',(e)=>{if(e.target===modal)modal.close()});$('#modal-like').addEventListener('click', async () => {
+ const id = modalItem?.id;
+ if (!id) return;
+ try {
+  await updateResearch(state => {
+   state.likes = state.likes.includes(id) ? state.likes.filter(value => value !== id) : [...state.likes,id];
+  });
+  toast('관심 발명품 목록이 업데이트됐어!');
+ } catch { toast('관심 목록을 저장하지 못했어.'); }
+});
+renderCards();
 const build={chassis:'banpei',core:'solar',module:'shield'};
 function opt(g,id){return CONFIG[g].find(v=>v.id===id)}
 function stats(){const bits=['chassis','core','module'].map(g=>opt(g,build[g]));return [0,1,2].map(i=>clamp(bits.reduce((acc,v)=>acc+v.values[i],0),1,100))}
@@ -56,22 +64,87 @@ function drawBlueprint(){const cvs=$('#build-canvas'),ctx=cvs.getContext('2d'),w
  ctx.shadowBlur=8;if(build.module==='shield'){ctx.beginPath();ctx.arc(0,0,145,0,Math.PI*2);ctx.strokeStyle='#9cd7ffb0';ctx.lineWidth=3;ctx.stroke()}else if(build.module==='thruster'){for(let x of [-70,70]){line([[x,75],[x+6,120]],'#ffb978',8)}}else{for(let x of [-124,124]){ctx.strokeStyle='#c0b5ff';ctx.beginPath();ctx.arc(x,0,23,-1.8,1.8);ctx.stroke()}}
  ctx.restore();ctx.fillStyle='#98c5cf';ctx.font='13px monospace';ctx.fillText(`BLUEPRINT / ${build.chassis.toUpperCase()} / ${build.core.toUpperCase()}`,19,27);ctx.fillText('VISUAL CONCEPT — NOT TO SCALE',19,h-19);
 }
-function renderOptions(){for(let g of Object.keys(CONFIG)){const target=$(`#${g}-choice`);target.replaceChildren(...CONFIG[g].map(item=>{let b=document.createElement('button');b.type='button';b.className='option-button'+(build[g]===item.id?' active':'');b.setAttribute('aria-pressed',String(build[g]===item.id));b.innerHTML=`<span class="opt-icon" aria-hidden="true">${item.icon}</span><span>${item.name}</span><small>${item.en}</small>`;b.addEventListener('click',()=>{build[g]=item.id;renderOptions();drawBlueprint();updateStats();beep(480)});return b}))}}
+function renderOptions(){for(let g of Object.keys(CONFIG)){const target=$(`#${g}-choice`);target.replaceChildren(...CONFIG[g].map(item=>{let b=document.createElement('button');b.type='button';b.className='option-button'+(build[g]===item.id?' active':'');b.setAttribute('aria-pressed',String(build[g]===item.id));b.innerHTML=`<span class="opt-icon" aria-hidden="true">${item.icon}</span><span>${item.name}</span><small>${item.en}</small>`;b.addEventListener('click',()=>{build[g]=item.id;renderOptions();drawBlueprint();updateStats();$('#prototype-result').textContent='부품 구성이 바뀌었어. 이 설계로 다시 시험해 봐.';delete $('#prototype-result').dataset.outcome;$('#trial-flight').hidden=true;beep(480)});return b}))}}
 function updateStats(){let n=stats();['power','stability','agility'].forEach((key,i)=>{$(`#${key}-number`).textContent=n[i];$(`#${key}-bar`).style.width=n[i]+'%'});$('#build-name').textContent=projectName();$('#build-grade').textContent=n[1]>=75?'PROTOTYPE // STABLE':n[1]<40?'PROTOTYPE // CAUTION':'PROTOTYPE // READY';$('#build-note').textContent=n[1]<40?'⚠ 안정성이 낮아. 안전한 코어나 실드 조합을 검토해.':n[1]>=75?'안정적이야! 사람을 보호하는 설계에 가까워졌어.':'예상 수치는 교육용 모의값이야. 조합을 더 시험해 봐.'}
 renderOptions();drawBlueprint();updateStats();
 function blueprint(){return {id:(globalThis.crypto?.randomUUID?.()||String(Date.now())),created:new Date().toISOString(),name:projectName(),chassis:build.chassis,core:build.core,module:build.module,stats:stats()}}
-$('#save-blueprint').addEventListener('click',()=>{const list=load(LSKEY,[]);list.unshift(blueprint());if(save(LSKEY,list.slice(0,30))){toast('설계도 저장! 이 브라우저에 기록해 뒀어.');window.dispatchEvent(new CustomEvent('lab-achievement',{detail:'blueprint'}));}else toast('저장공간을 사용할 수 없어. JSON으로 내보내 줘.');renderBlueprints();speak('좋아! 중요한 건 출력보다도 안전성과 다음 실험을 기록하는 거야.')});
+$('#save-blueprint').addEventListener('click', async () => {
+ const design = blueprint();
+ try {
+  await updateResearch(state => {
+   state.blueprints = [design, ...state.blueprints].slice(0,30);
+   if (!state.progress.done.includes('blueprint')) state.progress.done.push('blueprint');
+  });
+  toast('설계도를 저장했어. 제작실에서 시험할 수 있어.');
+ } catch { toast('설계도를 저장하지 못했어. JSON으로 내보낼 수 있어.'); }
+});
 function download(obj,name){let blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
 $('#export-blueprint').addEventListener('click',()=>{download(blueprint(),'skuld-blueprint.json');toast('JSON 설계도 내보내기 완료!')});
-function renderBlueprints(){let list=load(LSKEY,[]);const tgt=$('#saved-blueprints');if(!list.length){tgt.innerHTML='<div class="empty-record"><span class="big-icon">⌘</span>아직 저장된 설계가 없어.<br>조립 연구소에서 첫 작품을 만들어 봐!</div>';return}tgt.replaceChildren(...list.slice(0,15).map((bp)=>{let row=document.createElement('div');row.className='saved-entry';let text=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small'),btn=document.createElement('button');strong.textContent=bp.name||'UNKNOWN';const d=new Date(bp.created);small.textContent=(Number.isNaN(d.valueOf())?'':d.toLocaleString('ko-KR'))+' · STABILITY '+String(bp.stats?.[1]??'?');btn.textContent='JSON ↓';btn.addEventListener('click',()=>download(bp,'skuld-saved-blueprint.json'));text.append(strong,small);row.append(text,btn);return row}))}
-$('#clear-blueprints').addEventListener('click',()=>{if(!confirm('이 브라우저에 저장된 모든 설계 기록을 삭제할까요?'))return;save(LSKEY,[]);renderBlueprints();toast('내 설계 기록을 지웠어.')});renderBlueprints();
+const balance = $('#prototype-balance');
+const trialResult = $('#prototype-result');
+balance.oninput = () => {
+ $('#balance-reading').textContent = balance.value + '%';
+ trialResult.textContent = '동력 분배가 바뀌었어. 다시 시험해 봐.';
+ delete trialResult.dataset.outcome;
+ $('#trial-flight').hidden = true;
+};
+$('#trial-flight').onclick = () => $('#brief-flight').click();
+$('#test-blueprint').addEventListener('click', async () => {
+ const design = blueprint();
+ const allocation = Number(balance.value);
+ const {target, score, pass} = evaluateDesign(design, allocation);
+ const button = $('#test-blueprint');
+ button.disabled = true;
+ try {
+  await updateResearch(state => {state.test = {design, balance: allocation, score};});
+  trialResult.textContent = pass
+   ? `시험 통과 · ${score}점. 스쿨드: 이 설계로 비행 도크에서 관측을 시작해 봐.`
+   : `안전 정지 · ${score}점. 출력에 맞춰 동력 분배를 ${target}% 부근으로 조정하고, 안정성이 45 미만이면 코어나 실드를 바꿔 봐.`;
+  trialResult.dataset.outcome = pass ? 'pass' : 'retry';
+  $('#trial-flight').hidden = !pass;
+ } catch { trialResult.textContent = '시험 결과를 저장하지 못했어. 다시 시도해 줘.'; }
+ finally { button.disabled = false; }
+});
+function renderBlueprints(){const list=researchState().blueprints;const tgt=$('#saved-blueprints');if(!list.length){tgt.innerHTML='<div class="empty-record"><span class="big-icon">⌘</span>아직 저장된 설계가 없어.<br>조립 연구소에서 첫 작품을 만들어 봐!</div>';return}tgt.replaceChildren(...list.slice(0,15).map((bp)=>{let row=document.createElement('div');row.className='saved-entry';let text=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small'),btn=document.createElement('button');strong.textContent=bp.name||'UNKNOWN';const d=new Date(bp.created);small.textContent=(Number.isNaN(d.valueOf())?'':d.toLocaleString('ko-KR'))+' · STABILITY '+String(bp.stats?.[1]??'?');btn.textContent='JSON ↓';btn.addEventListener('click',()=>download(bp,'skuld-saved-blueprint.json'));text.append(strong,small);row.append(text,btn);return row}))}
+$('#clear-blueprints').addEventListener('click', async () => {
+ if (!confirm('이 브라우저에 저장된 모든 설계 기록을 삭제할까요?')) return;
+ try {
+  await updateResearch(state => { state.blueprints = []; });
+  toast('내 설계 기록을 지웠어.');
+ } catch { toast('설계 기록을 지우지 못했어.'); }
+});
+let initialDesignLoaded = false;
+onResearchChange(state => {
+ const previousLikes = likes;
+ likes = state.likes;
+ if (previousLikes.join() !== likes.join()) {
+  renderCards();
+  if (modalItem) $('#modal-like').textContent = likes.includes(modalItem.id) ? '등록 취소 ♡' : '관심 발명품 등록 ♡';
+ }
+ renderBlueprints();
+ if (initialDesignLoaded) return;
+ initialDesignLoaded = true;
+ const design = state.test?.design ?? state.blueprints[0];
+ if (!design) return;
+ for (const key of Object.keys(build)) build[key] = design[key];
+ if (state.test) {
+  balance.value = state.test.balance;
+  $('#balance-reading').textContent = balance.value + '%';
+  $('#trial-flight').hidden = !evaluateDesign(design,state.test.balance).pass;
+ }
+ renderOptions();
+ drawBlueprint();
+ updateStats();
+});
+renderBlueprints();
 // Reactor: deliberately fictional numeric model. Produces stable or caution result from visible inputs.
 const reactorInputs=['output','cooling','shield'];let reactorPrediction=0;
 function predictReactor(){let [o,c,s]=reactorInputs.map(k=>Number($(`#reactor-${k}`).value));reactorPrediction=clamp(Math.round(98-(o*.63)+(c*.36)+(s*.22)-(o>85?(o-85)*1.4:0)),0,100);reactorInputs.forEach((k,i)=>$(`#${k}-display`).textContent=[o,c,s][i]+'%');$('#reactor-safety').textContent=reactorPrediction+'%';$('#reactor-safety').style.color=reactorPrediction>=70?'#80e5d2':reactorPrediction>=50?'#ffcf85':'#ff8db6';$('#reactor-orb').style.filter=`hue-rotate(${o>85?65:0}deg) brightness(${.75+o/200})`}
 reactorInputs.forEach(k=>$(`#reactor-${k}`).addEventListener('input',predictReactor));predictReactor();
 $('#run-reactor').addEventListener('click',()=>{let o=Number($('#reactor-output').value);let pass=reactorPrediction>=70&&o<=90;$('#reactor-value').textContent=pass?'STABLE':'SAFE SHUTDOWN';$('#reactor-sub').textContent=pass?'RESONANCE LOCKED':'OVERRIDE ENGAGED';$('#reactor-message').textContent=pass?`가동 성공! 출력 ${o}%, 안정성 ${reactorPrediction}%. 천재 스쿨드님의 안전 검증 통과!`:`안전 정지. 안정성 ${reactorPrediction}%. 냉각·실드를 올리거나 출력을 줄여 봐.`;if(pass)window.dispatchEvent(new CustomEvent('lab-achievement',{detail:'reactor'}));toast(pass?'리액터 안정화 성공!':'과부하 예방 절차 가동!');speak(pass?'해냈어! 하지만 출력 수치는 실제 설비가 아닌 시뮬레이션이야.':'흥, 멈춘 것도 성공이야. 위험할 때 정지하는 게 제대로 된 설계니까.');beep(pass?880:300,.18)});
 // experiments tab keyboard navigation
-function changeExp(id){$$('.experiment-tab').forEach(b=>{let active=b.dataset.experiment===id;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active))});$$('.experiment-body').forEach(p=>p.hidden=p.id!==`panel-${id}`);if(id==='flight')resizeFlight();beep(620)}
+function changeExp(id){flight.pressed.clear();flight.last=0;$$('.experiment-tab').forEach(b=>{let active=b.dataset.experiment===id;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active))});$$('.experiment-body').forEach(p=>p.hidden=p.id!==`panel-${id}`);if(id==='flight')resizeFlight();beep(620)}
+window.changeExp = changeExp;
 $$('.experiment-tab').forEach((b,i)=>{b.addEventListener('click',()=>changeExp(b.dataset.experiment));b.addEventListener('keydown',e=>{if(!['ArrowRight','ArrowLeft'].includes(e.key))return;e.preventDefault();let bs=$$('.experiment-tab');let target=bs[(i+(e.key==='ArrowRight'?1:-1)+bs.length)%bs.length];changeExp(target.dataset.experiment);target.focus()})});
 let gateHits=0,gatePhase=0,gateRunning=true,gatePrev=0;
 function gateFrame(t){if(gateRunning&&!$('#panel-gate').hidden&&document.visibilityState==='visible'&&!document.querySelector('dialog[open]')){if(gatePrev)gatePhase=(gatePhase+(t-gatePrev)*.092)%360;const po=$('#gate-pointer');po.style.transform=`rotate(${gatePhase}deg)`}gatePrev=t;requestAnimationFrame(gateFrame)}requestAnimationFrame(gateFrame);
@@ -85,7 +158,7 @@ function setupFlight(){resizeFlight();flight.running=true;flight.score=0;flight.
 $('#flight-start').addEventListener('click',setupFlight);
 const controlled={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',KeyA:'left',KeyD:'right',KeyW:'up',KeyS:'down'};
 window.addEventListener('keydown',e=>{if(e.target instanceof HTMLElement&&['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;let key=controlled[e.code];if(key&&flight.running&&!$('#panel-flight').hidden&&!document.querySelector('dialog[open]')&&!document.activeElement?.closest('#living-lab')){flight.pressed.add(key);e.preventDefault()}});
-window.addEventListener('keyup',e=>{let key=controlled[e.code];if(key)flight.pressed.delete(key)});window.addEventListener('blur',()=>flight.pressed.clear());
+window.addEventListener('keyup',e=>{let key=controlled[e.code];if(key)flight.pressed.delete(key)});window.addEventListener('blur',()=>{flight.pressed.clear();flight.last=0;});document.addEventListener('visibilitychange',()=>{flight.pressed.clear();flight.last=0;});
 $$('.dpad button').forEach(b=>{let key=b.dataset.direction;b.addEventListener('pointerdown',e=>{b.setPointerCapture?.(e.pointerId);flight.pressed.add(key);e.preventDefault()});for(let event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>flight.pressed.delete(key))});
 function drawFlight(){let W=fc.width,H=fc.height,t=performance.now()/1000;fx.clearRect(0,0,W,H);let bg=fx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#111b35');bg.addColorStop(1,'#1d3459');fx.fillStyle=bg;fx.fillRect(0,0,W,H);fx.strokeStyle='#a7d4ed1b';for(let x=0;x<W;x+=42){fx.beginPath();fx.moveTo(x,0);fx.lineTo(x,H);fx.stroke()}for(let y=0;y<H;y+=42){fx.beginPath();fx.moveTo(0,y);fx.lineTo(W,y);fx.stroke()}
  for(let i=0;i<35;i++){const xx=(i*137+23)%W,yy=(i*197+29)%H;fx.fillStyle=i%3?'#adccf883':'#ffffffa0';fx.fillRect(xx,yy,2,2)}
@@ -95,6 +168,6 @@ function drawFlight(){let W=fc.width,H=fc.height,t=performance.now()/1000;fx.cle
  if(!flight.running){fx.fillStyle='#0d1125b7';fx.fillRect(0,H/2-40,W,80);fx.textAlign='center';fx.fillStyle='#fff1f9';fx.font='bold 21px sans-serif';fx.fillText(flight.hp<=0?'MISSION COMPLETE — RESTART':'PRESS START TO LAUNCH',W/2,H/2+8)}
 }
 function flightLoop(t){let dt=flight.last?Math.min((t-flight.last)/1000,.04):0;flight.last=t;if(flight.running&&!$('#panel-flight').hidden&&document.visibilityState==='visible'&&document.hasFocus()&&!document.querySelector('dialog[open]')){const speed=245*devicePixelRatio;let dx=(flight.pressed.has('right')?1:0)-(flight.pressed.has('left')?1:0),dy=(flight.pressed.has('down')?1:0)-(flight.pressed.has('up')?1:0);let length=Math.hypot(dx,dy)||1;flight.ship.x=clamp(flight.ship.x+dx/length*speed*dt,35,fc.width-35);flight.ship.y=clamp(flight.ship.y+dy/length*speed*dt,36,fc.height-35);flight.invuln=Math.max(0,flight.invuln-dt);for(let s of flight.stars){if(Math.hypot(s.x-flight.ship.x,s.y-flight.ship.y)<35){Object.assign(s,spawn());flight.score+=10;$('#flight-score').textContent=flight.score;beep(880,.035)}}for(let s of flight.hazards){if(flight.invuln===0&&Math.hypot(s.x-flight.ship.x,s.y-flight.ship.y)<37){Object.assign(s,spawn());flight.hp--;flight.invuln=1.6;$('#flight-health').textContent=flight.hp;beep(240,.15);if(flight.hp<=0){flight.running=false;$('#flight-message').textContent=`임무 종료. 최종 에너지 ${flight.score}. 안전 귀환 절차를 시작했어.`;toast(`정찰 결과 ${flight.score} ENERGY`);speak('기체가 무사히 귀환했어. 이제 다음 안전 설계를 시작해 볼까?')}}}}
- drawFlight();if(flight.running){requestAnimationFrame(flightLoop)}else{flightRAF=false;flight.last=0}}
+ if(!$('#panel-flight').hidden&&document.visibilityState==='visible'&&document.hasFocus()&&!document.querySelector('dialog[open]'))drawFlight();else flight.pressed.clear();if(flight.running){requestAnimationFrame(flightLoop)}else{flightRAF=false;flight.last=0}}
 resizeFlight();drawFlight();
 // little life: sprite walks without input, but user controls precise navigation by room buttons
