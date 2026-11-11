@@ -18,3 +18,23 @@ html{scroll-padding-top:95px}button:focus-visible,a:focus-visible,select:focus-v
 /* A compact first-visit path, readable without motion or background images. */
 .research-brief{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:20px 24px;margin:0 0 20px;border:1px solid #e6b1d152;border-radius:14px;background:linear-gradient(115deg,#34233c,#172b3d);box-shadow:0 12px 40px #05071935}.brief-eyebrow{display:block;color:#a8f6df;font:700 9px ui-monospace,monospace;letter-spacing:.18em;margin-bottom:7px}.research-brief strong{font-size:17px;color:#fff0f6}.research-brief p{margin:6px 0 0;color:#d3c8d9;font-size:12px;line-height:1.6}.brief-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.brief-actions a,.brief-actions button{white-space:nowrap;min-height:44px}.brief-actions button{color:#f6dce9;background:#28283f;border:1px solid #826b83;border-radius:6px;padding:10px 15px}.prototype-result{margin-top:16px;padding:14px;border:1px solid #78dec977;border-radius:8px;background:#0b202b;color:#d0f5eb;font-size:12px;line-height:1.7}.prototype-result[data-outcome=retry]{border-color:#f6b085;color:#ffe0c0}.prototype-result[data-outcome=pass]{border-color:#9effd5;color:#caffdf}@media(max-width:640px){.research-brief{align-items:flex-start;flex-direction:column;gap:14px;padding:17px}.research-brief strong{font-size:15px}.brief-actions{width:100%}.brief-actions a,.brief-actions button{flex:1;text-align:center;justify-content:center}}
 .module-scene{position:relative;overflow:hidden;aspect-ratio:16/8;background:#11182a}.module-scene>img{width:100%;height:100%;object-fit:cover;display:block}.scene-actor{display:none;position:absolute;bottom:2%;height:34%;aspect-ratio:128/160;background-size:300% 400%;background-position:50% 0;background-repeat:no-repeat;filter:drop-shadow(0 4px 6px #070817aa);pointer-events:none}.module-scene[data-zone=robotics] .scene-actor,.module-scene[data-zone=hangar] .scene-actor,.module-scene[data-zone=reactor] .scene-skuld{display:block}.scene-skuld{right:26%;background-image:url('./assets/crew/skuld.webp');animation:scene-breathe 2.8s ease-in-out infinite}.scene-banpei{right:12%;height:26%;background-image:url('./assets/crew/banpei.webp');animation:scene-breathe 3.5s ease-in-out infinite reverse}@keyframes scene-breathe{50%{transform:translateY(-4px)}}@media(prefers-reduced-motion:reduce){.scene-actor{animation:none}}@media(max-width:800px){.module-scene{aspect-ratio:16/10}}
+.trial-balance{display:grid;grid-template-columns:1fr auto;gap:.3rem .7rem;flex:1 1 100%;color:#f1dbea;font-size:.85rem}
+.trial-balance input{grid-column:1/-1;width:100%;accent-color:#f98eb7;min-height:32px}
+.research-journal{margin-top:1rem;overflow-wrap:anywhere}
+#research-log{padding-inline-start:1.4rem;line-height:1.7}
+#research-flight-status{font-size:.85rem;color:#cee9e4;overflow-wrap:anywhere}
+#backup-file{display:block;margin:.6rem 0;max-width:100%;color:inherit}
+.module-scene[data-activity=ready] .scene-banpei{filter:drop-shadow(0 0 9px #9ef4dd)}
+.module-scene[data-activity=retry] .scene-skuld{filter:drop-shadow(0 0 9px #ffad7f)}
+.module-scene[data-activity=returned] .scene-banpei{filter:drop-shadow(0 0 11px #ffe597)}
+.lab-motion-paused .scene-actor{animation:none}
+.scene-signal{position:absolute;display:none;right:18%;bottom:16%;width:1rem;aspect-ratio:1;border:2px solid #a9ffe3;border-radius:50%;box-shadow:0 0 18px #94ffdf;pointer-events:none}
+.module-scene[data-zone] .scene-signal{display:block;animation:scene-breathe 2.4s ease-in-out infinite}
+.module-scene[data-zone=gate] .scene-signal{right:48%;bottom:28%;border-color:#e5a9ff}
+.module-scene[data-zone=alchemy] .scene-signal{right:30%;bottom:25%;border-color:#ffe0ae}
+.module-scene[data-activity=retry] .scene-signal{border-color:#ffb17f;box-shadow:0 0 18px #ffb17f}
+.module-scene[data-activity=returned] .scene-signal{border-color:#ffe597}
+.lab-motion-paused .scene-signal{animation:none}
+@media(prefers-reduced-motion:reduce){.module-scene[data-zone] .scene-signal{animation:none}}
+.hub-grid>div:first-child{min-width:0}
+@media(max-width:480px){.lab-toolbar{flex-wrap:wrap}.lab-tools{flex-wrap:wrap}.voyage-controls label{min-width:0}.voyage-controls select{max-width:100%}}

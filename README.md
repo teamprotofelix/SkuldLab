@@ -23,13 +23,14 @@ npm run check
 python tests/verify.py
 ```
 
-DOM 통합 검사는 설치된 jsdom의 진입점 경로를 인수로 받습니다.
+브라우저 통합 검사는 Playwright와 Chromium이 설치된 개발 환경에서 실행합니다. 첫 번째 명령으로 정적 서버를 열고, 별도 터미널에서 두 번째 명령을 실행합니다.
 
 ```sh
-node --experimental-vm-modules tests/dom-check.mjs /absolute/path/to/jsdom/lib/api.js
+python -m http.server 4178 --bind 127.0.0.1
+node tests/research-browser.mjs http://127.0.0.1:4178/
 ```
 
-이 검사는 HTML과 실제 두 스크립트를 함께 실행하지만 **브라우저의 화면 렌더링이나 실제 터치를 검증하지 않습니다**. Node 외에 런타임 의존성은 없으며 `verify.py`는 Pillow를 사용합니다.
+시스템 Chromium을 사용하려면 `SKULDLAB_CHROMIUM`에 실행 파일 경로를 지정합니다. 사이트 자체에는 서버 의존성이 없고 `verify.py`는 Pillow를 사용합니다.
 
 ## 이미지와 스프라이트
 

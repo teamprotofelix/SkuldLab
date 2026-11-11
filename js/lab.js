@@ -1,15 +1,33 @@
-import {makeBackup} from './research-backup.js';
-import {ZONES,CREW,Resident,Voyage,SECTORS,MISSIONS,RECIPES,cleanProgress,checkSequence} from './lab-model.js';
+import {makeBackup, parseBackup, restoreBackup, researchState, onResearchChange, updateResearch, evaluateDesign, settleVoyage, MAX_BACKUP_BYTES} from './research-backup.js';
+import {ZONES,CREW,Resident,Voyage,SECTORS,MISSIONS,RECIPES,checkSequence} from './lab-model.js';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const residents=CREW.map((p,i)=>new Resident(p,i));
 const imageCache=new Map();function image(src){if(!imageCache.has(src)){const im=new Image();im.src=src;imageCache.set(src,im);}return imageCache.get(src);}
 let selected='skuld',currentZone='atelier',view='map',lifePaused=reduced.matches,following=false,focused=true,started=false,flightPaused=false,last=0,elapsed=0,lastHUD=0,lastFollow=0;
-const input=new Set();let voyage=new Voyage();let progress;try{progress=cleanProgress(JSON.parse(localStorage.getItem('skuld_passport_v2')));}catch{progress=cleanProgress(null);}
-let robotDeployed=progress.done.includes('blueprint');
-function persist(){try{const stored=cleanProgress(JSON.parse(localStorage.getItem('skuld_passport_v2')));progress=cleanProgress({done:[...stored.done,...progress.done],best:Math.max(stored.best,progress.best)});localStorage.setItem('skuld_passport_v2',JSON.stringify(progress));return true;}catch{$('#passport-count').textContent='저장 불가 · JSON 내보내기 가능';return false;}}
-function renderPassport(){const count=progress.done.length;$('#passport-count').textContent=`${count} / 6 COMPLETE`;$('#mission-list').replaceChildren(...MISSIONS.map((m,i)=>{let b=document.createElement('button');b.dataset.mission=m.id;b.className='mission'+(progress.done.includes(m.id)?' done':'');b.innerHTML=`<span>${progress.done.includes(m.id)?'✓':String(i+1).padStart(2,'0')}</span><strong>${m.name}</strong><small>${progress.done.includes(m.id)?'COMPLETE':'도전하기 ↗'}</small>`;b.onclick=()=>{if(m.id==='voyage')setView('voyage');else if(m.id==='blueprint')go('workshop');else openZone(m.id);};return b;}));}
-function achieve(id){if(!MISSIONS.some(m=>m.id===id)||progress.done.includes(id))return;progress.done.push(id);const saved=persist();renderPassport();if(!saved)$('#passport-count').textContent='저장 불가 · JSON 내보내기 가능';announce(saved?`연구 임무 완료: ${MISSIONS.find(m=>m.id===id).name}`:'임무는 진행했지만 저장하지 못했어. 여권을 내보내 줘.');if(id==='blueprint'){robotDeployed=true;renderDeployedRobot();}}
+const input = new Set();
+let voyage = new Voyage();
+let progress = researchState().progress;
+let activeResearch = null;
+let savingReturn = false;
+let energyCheckpoint = 0;
+const pendingMissions = new Set();
+const storageError = () => {
+ $('#passport-count').textContent = '저장할 수 없어. 브라우저 저장 설정을 확인해 줘.';
+};
+function renderPassport(){const count=progress.done.length;$('#passport-count').textContent=`${count} / 6 COMPLETE`;$('#mission-list').replaceChildren(...MISSIONS.map((m,i)=>{let b=document.createElement('button');b.dataset.mission=m.id;b.className='mission'+(progress.done.includes(m.id)?' done':'');b.innerHTML=`<span>${progress.done.includes(m.id)?'✓':String(i+1).padStart(2,'0')}</span><strong>${m.name}</strong><small>${progress.done.includes(m.id)?'COMPLETE':'도전하기 ↗'}</small>`;b.onclick=()=>{if(m.id==='voyage')setView('voyage');else if(m.id==='blueprint')go('workshop');else openZone(m.id==='tree'?'worldtree':m.id);};return b;}));}
+async function achieve(id) {
+ const mission = MISSIONS.find(item => item.id === id);
+ if (!mission || progress.done.includes(id) || pendingMissions.has(id)) return;
+ pendingMissions.add(id);
+ try {
+  await updateResearch(state => {
+   if (!state.progress.done.includes(id)) state.progress.done.push(id);
+  });
+  announce(`연구 임무 완료 · ${mission.name}`);
+ } catch { storageError(); }
+ finally { pendingMissions.delete(id); }
+}
 window.addEventListener('lab-achievement',e=>achieve(e.detail));
 function announce(s){$('#observer-line').textContent=s;}
 function go(id,experiment){if(experiment)window.changeExp?.(experiment);document.getElementById(id)?.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});if(experiment)document.getElementById('tab-'+experiment)?.focus({preventScroll:true});}
@@ -26,31 +44,174 @@ function motionUI(){$('#life-toggle').setAttribute('aria-pressed',String(lifePau
 $('#life-toggle').onclick=()=>{lifePaused=!lifePaused;motionUI();};reduced.addEventListener('change',()=>{lifePaused=reduced.matches;motionUI();});motionUI();
 $('#map-hotspots').replaceChildren(...ZONES.map((z,i)=>{const b=document.createElement('button');b.className='zone-hotspot';b.style.left=z.x*100+'%';b.style.top=(z.y-.12)*100+'%';b.innerHTML=`<span>${z.icon}</span><strong>${z.name}</strong><small>0${i+1} / ${z.en}</small>`;b.setAttribute('aria-label',z.name+' 입장');b.onclick=()=>openZone(z.id);return b;}));
 $('#map-residents').replaceChildren(...residents.map(r=>{const b=document.createElement('button');b.className='map-resident';b.dataset.resident=r.person.id;b.setAttribute('aria-label',r.person.name+' 선택');b.innerHTML='<span class="actor-art"></span><small></small>';portrait(b.firstElementChild,r.person.id);b.lastElementChild.textContent=r.person.name;b.onclick=()=>selectCrew(r.person.id);r.element=b;return b;}));
-function renderDeployedRobot(){if(!robotDeployed||$('#deployed-robot'))return;const b=document.createElement('button');b.id='deployed-robot';b.className='deployed-robot';b.setAttribute('aria-label','저장된 설계의 테스트 로봇');b.innerHTML='<span class="actor-art"></span><small>MY PROTOTYPE</small>';portrait(b.firstElementChild,'banpei');b.onclick=()=>{let saved;try{saved=JSON.parse(localStorage.getItem('skuld_lab_blueprints_v1'))?.[0];}catch{}announce(saved?`최근 저장한 ${String(saved.name||'설계')} 시험기야. 지도에는 공통 밤페이 외형이 표시돼. 작업대에서 부품과 성능을 확인해!`:'시험용 로봇이야. 부품별 성능은 아래 작업대에서 확인해!');go('workshop');};$('#map-residents').append(b);}
+function renderDeployedRobot(){if(!researchState().blueprints.length&&!researchState().test){$('#deployed-robot')?.remove();return;}if($('#deployed-robot'))return;const b=document.createElement('button');b.id='deployed-robot';b.className='deployed-robot';b.setAttribute('aria-label','저장된 설계의 테스트 로봇');b.innerHTML='<span class="actor-art"></span><small>MY PROTOTYPE</small>';portrait(b.firstElementChild,'banpei');b.onclick=()=>{const saved=researchState().test?.design??researchState().blueprints[0];announce(saved?`최근 저장한 ${String(saved.name||'설계')} 시험기야. 지도에는 공통 밤페이 외형이 표시돼. 작업대에서 부품과 성능을 확인해!`:'시험용 로봇이야. 부품별 성능은 아래 작업대에서 확인해!');go('workshop');};$('#map-residents').append(b);}
 const moduleDialog=$('#module-dialog'),helpDialog=$('#help-dialog');let restoreFocus=null;
 function showDialog(d){restoreFocus=document.activeElement;input.clear();window.labModalOpen=true;d.showModal();}
 function closeDialog(d){d.close();window.labModalOpen=false;last=0;restoreFocus?.focus({preventScroll:true});}
 for(const d of [moduleDialog,helpDialog]){d.addEventListener('cancel',e=>{e.preventDefault();closeDialog(d);});d.addEventListener('click',e=>{if(e.target===d)closeDialog(d);});}
 $('#module-close').onclick=()=>closeDialog(moduleDialog);$('#help-close').onclick=()=>closeDialog(helpDialog);$('#lab-help').onclick=()=>showDialog(helpDialog);
-function openZone(id){const z=ZONES.find(z=>z.id===id);if(!z)return;currentZone=id;$('#module-scene').dataset.zone=id;const art=$('#module-art'),fallback=`./assets/${id}.webp`,detail=!navigator.connection?.saveData&&['robotics','hangar','reactor'].includes(id)?`./assets/detail/${id}-v3.webp`:fallback;art.onerror=()=>{art.onerror=null;art.src=fallback;};art.src=detail;art.alt=z.name+' 내부 전경';$('#module-title').textContent=z.name;$('#module-kicker').textContent='MODULE / '+z.en;$('#module-description').textContent=z.desc;$('#module-start').textContent=z.action+' ↗';$('#module-game').hidden=true;$('#module-occupants').textContent='현재 구성원: '+(residents.filter(r=>r.room===id).map(r=>r.person.name).join(' · ')||'연구 장비 자동 운용 중');if(!moduleDialog.open)showDialog(moduleDialog);}
+function openZone(id){const z=ZONES.find(z=>z.id===id);if(!z)return;currentZone=id;const scene=$('#module-scene'), research=researchState();
+ scene.dataset.zone=id;
+ scene.dataset.activity=research.test ? (evaluateDesign(research.test.design,research.test.balance).pass?'ready':'retry') : research.log.length?'returned':'idle';const art=$('#module-art'),fallback=`./assets/${id}.webp`,detail=!navigator.connection?.saveData&&['robotics','hangar','reactor'].includes(id)?`./assets/detail/${id}-v3.webp`:fallback;art.onerror=()=>{art.onerror=null;art.src=fallback;};art.src=detail;art.alt=z.name+' 내부 전경';$('#module-title').textContent=z.name;$('#module-kicker').textContent='MODULE / '+z.en;$('#module-description').textContent=z.desc;$('#module-start').textContent=(z.flight?'비행 화면 열기':z.action)+' ↗';$('#module-game').hidden=true;$('#module-occupants').textContent='현재 구성원: '+(residents.filter(r=>r.room===id).map(r=>r.person.name).join(' · ')||'연구 장비 자동 운용 중');if(!moduleDialog.open)showDialog(moduleDialog);}
 $('#module-visit').onclick=()=>{sendTo(currentZone);closeDialog(moduleDialog);setView('map');};
-$('#module-start').onclick=()=>{const z=ZONES.find(z=>z.id===currentZone);if(z.game){startMini(z.game);return;}closeDialog(moduleDialog);if(z.flight){setView('voyage');startFlight();}else go(z.link||'experiments',z.experiment);};
+$('#module-start').onclick=()=>{const z=ZONES.find(z=>z.id===currentZone);if(z.game){startMini(z.game);return;}closeDialog(moduleDialog);if(z.flight){setView('voyage');}else go(z.link||'experiments',z.experiment);};
 let miniKind='tree',miniTarget=[],miniInput=[],miniRound=0,miniDone=false;
 function startMini(kind){miniKind=kind;miniInput=[];miniDone=false;$('#module-game').hidden=false;let choices;if(kind==='tree'){miniTarget=['새싹','별빛','뿌리'];choices=['뿌리','새싹','별빛'];$('#mini-instruction').textContent='세계수의 신호: 새싹 → 별빛 → 뿌리. 같은 순서로 회로를 연결해.';}else{let r=RECIPES[miniRound%RECIPES.length];miniTarget=r.steps;choices=['별가루','달빛 물','세계수 잎'];$('#mini-instruction').textContent=r.name+': '+r.steps.join(' → ');}
 $('#mini-response').textContent='준비 완료. 첫 번째 '+(kind==='tree'?'신호':'재료')+'를 골라 줘.';$('#mini-buttons').replaceChildren(...choices.map((c,i)=>{const b=document.createElement('button');b.textContent=(kind==='tree'?['❖','✧','❀'][i]:['✦','◒','❧'][i])+' '+c;b.onclick=()=>{if(miniDone)return;miniInput.push(c);const result=checkSequence(miniInput,miniTarget);if(result==='retry'){miniInput=[];$('#mini-response').textContent='앗, 연결 순서가 달라. 기록을 보고 처음부터 다시 해 보자!';}else if(result==='complete'){miniDone=true;$('#mini-response').textContent=kind==='tree'?'공명 회로 연결 완료! 세계수의 새 잎이 빛나고 있어.':'배합 완료! 울드가 포션의 안정성을 확인했어.';achieve(kind);$$('#mini-buttons button').forEach(b=>b.disabled=true);}else $('#mini-response').textContent=miniInput.join(' → ')+` (${miniInput.length}/3)`;return;};return b;}));}
 $('#mini-reset').onclick=()=>{miniRound++;startMini(miniKind);};
 $('#progress-export').onclick=()=>{const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify({version:2,...progress},null,2)],{type:'application/json'}));a.href=url;a.download='skuld-research-passport.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);};
-$('#backup-export').onclick=()=>{try{const backup=makeBackup(localStorage),a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));a.href=url;a.download='skuldlab-research-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);$('#backup-status').textContent='백업 다운로드를 요청했어. 저장된 파일을 확인해 줘. 복원 기능은 준비 중이야.';}catch(error){$('#backup-status').textContent=error.message||'백업하지 못했어. 브라우저 저장 상태를 확인해 줘.';}};
+const backupStatus = $('#backup-status');
+const backupInput = $('#backup-file');
+const restoreButton = $('#backup-restore');
+let preview = null;
+$('#backup-export').onclick = async () => {
+ try {
+  const backup = makeBackup(await updateResearch());
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(new Blob([JSON.stringify(backup)], {type:'application/json'}));
+  link.href = url;
+  link.download = 'skuldlab-research-backup.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  backupStatus.textContent = '백업 다운로드를 시작했어.';
+ } catch { backupStatus.textContent = '저장 기록을 읽을 수 없어. 브라우저 저장 설정을 확인해 줘.'; }
+};
+backupInput.onchange = async () => {
+ preview = null;
+ restoreButton.disabled = true;
+ const file = backupInput.files[0];
+ if (!file) return;
+ try {
+  if (file.size > MAX_BACKUP_BYTES) throw new Error('백업은 2MB까지 가져올 수 있어.');
+  const incoming = parseBackup(await file.text());
+  const current = await updateResearch();
+  if (file !== backupInput.files[0]) return;
+  const merged = restoreBackup(current, incoming);
+  preview = {incoming, expected: JSON.stringify(current)};
+  backupStatus.textContent = `미리보기 · 설계도 ${incoming.blueprints.length}개, 관심 발명품 ${incoming.likes.length}개, 임무 ${incoming.progress.done.length}개, 병합 후 귀환 기록 ${merged.log.length}개. 적용하면 설계도·관심·여권·시험이 교체돼.`;
+  restoreButton.disabled = false;
+ } catch (error) {
+  if (file === backupInput.files[0]) backupStatus.textContent = error instanceof SyntaxError ? 'JSON 형식을 읽을 수 없어.' : error.message;
+ }
+};
+restoreButton.onclick = async () => {
+ const selected = preview;
+ if (!selected) return;
+ preview = null;
+ restoreButton.disabled = true;
+ backupInput.disabled = true;
+ try {
+  await updateResearch(current => {
+   if (JSON.stringify(current) !== selected.expected) throw new Error('미리보기 이후 기록이 바뀌었어. 파일을 다시 선택해 줘.');
+   return restoreBackup(current, selected.incoming);
+  });
+  window.location.reload();
+ } catch (error) {
+  backupStatus.textContent = `복원하지 못했어. ${error.message}`;
+  backupInput.value = '';
+  backupInput.disabled = false;
+ }
+};
 // A single RAF drives resident movement and the voyage; hidden/paused scenes do not advance.
 const canvas=$('#voyage-canvas'),ctx=canvas.getContext('2d');const sectors=SECTORS.map(s=>image(`./assets/generated/${s.id}.webp`));const shipArt=image('./assets/generated/banpei-flight.webp');
 $('#voyage-select').replaceChildren(...SECTORS.map((s,i)=>new Option(s.name,String(i))));
 $('#voyage-select').onchange=()=>{voyage.sector=Number($('#voyage-select').value);voyage.clock=0;voyage.event=SECTORS[voyage.sector].line;drawVoyage();};
 function mode(mode){voyage.mode=mode;input.clear();$('#voyage-auto').setAttribute('aria-pressed',String(mode==='auto'));$('#voyage-manual').setAttribute('aria-pressed',String(mode==='manual'));$('#voyage-pad').hidden=mode!=='manual';$('#voyage-mode').textContent=mode==='auto'?'AUTOPILOT':'MANUAL CONTROL';$('#voyage-wrap').focus({preventScroll:true});}
-function startFlight(){started=true;flightPaused=false;$('#voyage-idle').hidden=true;pauseUI();last=0;$('#voyage-wrap').focus({preventScroll:true});}
+function startFlight(){if(savingReturn)return;started=true;flightPaused=false;$('#voyage-idle').hidden=true;pauseUI();last=0;$('#voyage-wrap').focus({preventScroll:true});}
 function pauseUI(){$('#voyage-pause').textContent=flightPaused?'비행 재개':'일시정지';$('#voyage-pause').setAttribute('aria-pressed',String(flightPaused));}
 $('#voyage-launch').onclick=startFlight;$('#voyage-auto').onclick=()=>{startFlight();mode('auto');};$('#voyage-manual').onclick=()=>{startFlight();mode('manual');};
-$('#voyage-pause').onclick=()=>{flightPaused=!flightPaused;input.clear();pauseUI();};
-$('#voyage-reset').onclick=()=>{voyage=new Voyage();mode('auto');startFlight();drawVoyage();};
+$('#voyage-pause').onclick=()=>{if(savingReturn)return;flightPaused=!flightPaused;input.clear();pauseUI();};
+function syncResearchFlight() {
+ const test = researchState().test;
+ const eligible = test && evaluateDesign(test.design, test.balance).pass && !researchState().log.some(entry => entry.id === test.design.id);
+ $('#research-launch').disabled = !eligible || !!activeResearch;
+ $('#research-return').disabled = !activeResearch || voyage.energy < 3 || savingReturn;
+ $('#voyage-select').disabled = !!activeResearch;
+ $('#voyage-reset').disabled = savingReturn;
+ $('#research-cancel').hidden = !activeResearch;
+ $('#research-cancel').disabled = savingReturn;
+ if (activeResearch) {
+  const name = activeResearch.design.name;
+  $('#research-flight-status').textContent = voyage.energy >= 3
+   ? `${name} · 관측 완료. 귀환 버튼으로 일지에 남겨 줘.`
+   : `${name} · 별조각 ${voyage.energy}/3. 세 조각을 모은 뒤 귀환해 줘.`;
+ } else {
+  $('#research-flight-status').textContent = eligible ? `${test.design.name} · 시험 통과. 항로를 고르고 관측을 시작해 줘.` : '작업대에서 설계 시험을 통과하면 연구 비행을 시작할 수 있어.';
+ }
+}
+$('#research-launch').onclick = () => {
+ const test = researchState().test;
+ if (!test || !evaluateDesign(test.design, test.balance).pass || activeResearch) return;
+ const sector = Number($('#voyage-select').value);
+ const [, stability, agility] = test.design.stats;
+ activeResearch = test;
+ voyage = new Voyage();
+ voyage.sector = sector;
+ voyage.event = SECTORS[sector].line;
+ voyage.research = {handling: .75 + agility / 200, impact: Math.round(32 - stability / 5)};
+ energyCheckpoint = 0;
+ mode('auto');
+ startFlight();
+ syncResearchFlight();
+ drawVoyage();
+};
+$('#research-return').onclick = async () => {
+ if (!activeResearch || voyage.energy < 3 || savingReturn) return;
+ savingReturn = true;
+ flightPaused = true;
+ input.clear();
+ pauseUI();
+ syncResearchFlight();
+ const entry = {...activeResearch, id:activeResearch.design.id, sector:SECTORS[voyage.sector].id,
+  fragments:voyage.energy, distance:Math.floor(voyage.distance), returned:new Date().toISOString()};
+ try {
+  await updateResearch(state => {
+   settleVoyage(state, entry);
+   state.progress.best = Math.max(state.progress.best, entry.fragments);
+  });
+  activeResearch = null;
+  started = false;
+  $('#voyage-idle').hidden = false;
+  syncResearchFlight();
+  setView('map');
+  announce(`스쿨드: ${entry.fragments}개나 찾아왔네! 관측 결과는 연구 일지에서 확인해 봐.`);
+  go('records');
+ } catch {
+  $('#research-flight-status').textContent = '귀환 기록을 저장하지 못했어. 다시 귀환을 눌러 줘.';
+ } finally {
+  savingReturn = false;
+  $('#research-return').disabled = !activeResearch;
+  $('#voyage-reset').disabled = false;
+ }
+};
+$('#research-cancel').onclick = () => {
+ if (savingReturn) return;
+ activeResearch = null;
+ voyage = new Voyage();
+ started = false;
+ flightPaused = false;
+ input.clear();
+ energyCheckpoint = 0;
+ $('#voyage-idle').hidden = false;
+ mode('auto');
+ pauseUI();
+ syncResearchFlight();
+ drawVoyage();
+};
+$('#voyage-reset').onclick=()=>{
+ const sector = voyage.sector;
+ const profile = voyage.research;
+ voyage = new Voyage();
+ if (activeResearch) {
+  voyage.sector = sector;
+  voyage.research = profile;
+ }
+ energyCheckpoint = 0;
+ mode('auto');
+ startFlight();
+ syncResearchFlight();
+ drawVoyage();
+};
 $('#voyage-speed').oninput=()=>$('#voyage-speed-label').textContent=$('#voyage-speed').value+'×';
 const keys={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right'};
 window.addEventListener('keydown',e=>{if(view!=='voyage'||voyage.mode!=='manual'||!started||flightPaused||window.labModalOpen||!$('#voyage-wrap').contains(document.activeElement))return;if(keys[e.code]){e.preventDefault();input.add(keys[e.code]);}});
@@ -68,10 +229,38 @@ $('#voyage-sector').textContent=SECTORS[voyage.sector].name;$('#voyage-select').
 }
 let mapVisible=true,flightVisible=false;if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{for(const e of entries){if(e.target.id==='map-view')mapVisible=e.isIntersecting;if(e.target.id==='voyage-wrap')flightVisible=e.isIntersecting;}},{threshold:.05});observer.observe($('#map-view'));observer.observe($('#voyage-wrap'));}else flightVisible=true;
 function frame(t){const dt=last?Math.min((t-last)/1000,.05):0;last=t;const active=document.visibilityState!=='hidden'&&focused&&!anyModal();if(active){elapsed+=dt;if(view==='map'&&mapVisible&&!lifePaused){for(const r of residents){const walking=r.step(dt,r.person.id!==selected||!following);renderResident(r,walking,t);if(r.arrived&&r.person.id===selected)$('#observer-room').textContent=ZONES.find(z=>z.id===r.room).name;}if(following&&t-lastFollow>600){lastFollow=t;residents.find(r=>r.person.id===selected).element.scrollIntoView({block:'nearest',inline:'nearest',behavior:reduced.matches?'instant':'smooth'});}}
-if(view==='voyage'&&flightVisible&&started&&!flightPaused){voyage.step(dt,Object.fromEntries([...input].map(k=>[k,true])),Number($('#voyage-speed').value));if(voyage.energy>=10)achieve('voyage');if(t-lastHUD>50){lastHUD=t;drawVoyage();}if(voyage.energy>progress.best){progress.best=voyage.energy;if(voyage.energy%5===0)persist();}}
-}requestAnimationFrame(frame);}
+if (view === 'voyage' && flightVisible && started && !flightPaused) {
+ const previousEnergy = voyage.energy;
+ voyage.step(dt, Object.fromEntries([...input].map(key => [key,true])), Number($('#voyage-speed').value));
+ if (voyage.energy !== previousEnergy) {
+  syncResearchFlight();
+  if (voyage.energy >= 10) achieve('voyage');
+  if (voyage.energy > progress.best && voyage.energy >= energyCheckpoint + 5) {
+   const energy = voyage.energy;
+   energyCheckpoint = energy;
+   updateResearch(state => {state.progress.best = Math.max(state.progress.best, energy);}).catch(storageError);
+  }
+ }
+ if (t - lastHUD > 50) {lastHUD = t; drawVoyage();}
+}
+}else input.clear();requestAnimationFrame(frame);}
 function renderResident(r,walking,t){r.element.style.left=r.x*100+'%';r.element.style.top=r.y*100+'%';r.element.style.zIndex=String(20+Math.round(r.y*10));r.element.firstElementChild.style.backgroundPosition=`${(walking?Math.floor(t/180)%3:1)*50}% ${r.direction/3*100}%`;}
-window.addEventListener('pagehide',persist);window.addEventListener('lab-achievement',()=>{if(!$('#deployed-robot'))renderDeployedRobot();});
+$('#voyage-wrap').addEventListener('focusout', () => input.clear());
+onResearchChange(state => {
+ const changed = progress.done.join() !== state.progress.done.join();
+ progress = state.progress;
+ if (changed) renderPassport();
+ renderDeployedRobot();
+ syncResearchFlight();
+ $('#research-rewards').textContent = `보상 ${state.log.reduce((total, entry) => total + entry.fragments, 0)}점 · 귀환 ${state.log.length}회`;
+ $('#research-log').replaceChildren(...state.log.slice(0,20).map(entry => {
+  const row = document.createElement('li');
+  const route = SECTORS.find(sector => sector.id === entry.sector);
+  row.textContent = `${entry.design.name} · ${route.name.slice(5)} · 시험 ${entry.score}점 · 관측 ${entry.distance} AU · 별조각 ${entry.fragments}개 · 보상 +${entry.fragments}점`;
+  return row;
+ }));
+});
+updateResearch().catch(storageError);
 // Expose a bounded read-only snapshot for diagnostics; no user data or credentials.
 window.skuldLabSnapshot=()=>({view,selected,lifePaused,mode:voyage.mode,energy:voyage.energy,shield:voyage.shield,ship:{x:voyage.x,y:voyage.y},distance:voyage.distance,flightPaused,missions:[...progress.done],residents:residents.map(r=>({id:r.person.id,room:r.room,x:r.x,y:r.y,queue:[...r.queue]}))});
-renderPassport();renderDeployedRobot();selectCrew('skuld');residents.forEach(r=>renderResident(r,false,0));drawVoyage();requestAnimationFrame(frame);
+renderPassport();syncResearchFlight();renderDeployedRobot();selectCrew('skuld');residents.forEach(r=>renderResident(r,false,0));drawVoyage();requestAnimationFrame(frame);
